@@ -24,7 +24,7 @@ const createNotification = (payload) => __awaiter(void 0, void 0, void 0, functi
 const getAllNotificationQuery = (query, userId) => __awaiter(void 0, void 0, void 0, function* () {
     const notificationQuery = new QueryBuilder_1.default(notification_model_1.default.find({ userId }), query)
         .search([''])
-        .filter()
+        .filter([''])
         .sort()
         .paginate()
         .fields();
@@ -35,7 +35,7 @@ const getAllNotificationQuery = (query, userId) => __awaiter(void 0, void 0, voi
 const getAllNotificationByAdminQuery = (query) => __awaiter(void 0, void 0, void 0, function* () {
     const notificationQuery = new QueryBuilder_1.default(notification_model_1.default.find({ role: 'admin' }), query)
         .search([''])
-        .filter()
+        .filter([''])
         .sort()
         .paginate()
         .fields();

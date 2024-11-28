@@ -40,8 +40,6 @@ function main() {
             //@ts-ignore
             `Socket is listening on port ${config_1.default.ip}:${config_1.default.socket_port}`.yellow
                 .bold);
-            // io.listen(Number(config.socket_port));
-            // console.log(`Socket is listening on port ${config.socket_port}`);
         }
         catch (err) {
             console.error(err);

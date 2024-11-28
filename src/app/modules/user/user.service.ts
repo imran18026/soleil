@@ -25,12 +25,10 @@ export interface OTPVerifyAndCreateUserProps {
 }
 
 const createUserToken = async (payload: TUserCreate) => {
-  const { role, email, fullName, password, phone } = payload;
+  const { email, fullName, password, phone } = payload;
+  const role = USER_ROLE.CUSTOMER;
 
   // user role check
-  if (!(role === USER_ROLE.ADMIN || role === USER_ROLE.CUSTOMER)) {
-    throw new AppError(httpStatus.BAD_REQUEST, 'User data is not valid !!');
-  }
 
   // user exist check
   const userExist = await userService.getUserByEmail(email);
@@ -107,6 +105,8 @@ const otpVerifyAndCreateUser = async ({
     access_secret: config.jwt_access_secret as string,
   });
 
+  console.log(decodeData);
+
   if (!decodeData) {
     throw new AppError(httpStatus.BAD_REQUEST, 'You are not authorised');
   }
@@ -175,7 +175,7 @@ const updateUser = async (id: string, payload: Partial<TUser>) => {
 const getAllUserQuery = async (query: Record<string, unknown>) => {
   const userQuery = new QueryBuilder(User.find({}), query)
     .search([''])
-    .filter()
+    .filter([''])
     .sort()
     .paginate()
     .fields();
@@ -237,13 +237,8 @@ const getAllUserRatio = async (year: number) => {
 };
 
 const getUserById = async (id: string) => {
-  const result = await User.findById(id).populate({
-    path: 'purchesPackageId', // First level population
-    populate: {
-      path: 'package_id',
-      model: 'SubscriptionPlan',
-    },
-  });
+  const result = await User.findById(id);
+  console.log(result);
   if (!result) {
     throw new AppError(httpStatus.NOT_FOUND, 'User not found');
   }

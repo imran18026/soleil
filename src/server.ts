@@ -27,9 +27,6 @@ async function main() {
       `Socket is listening on port ${config.ip}:${config.socket_port}`.yellow
         .bold,
     );
-
-    // io.listen(Number(config.socket_port));
-    // console.log(`Socket is listening on port ${config.socket_port}`);
   } catch (err) {
     console.error(err);
   }

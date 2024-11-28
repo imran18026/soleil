@@ -37,11 +37,9 @@ const otp_utils_1 = require("../otp/otp.utils");
 const eamilNotifiacation_1 = require("../../utils/eamilNotifiacation");
 const tokenManage_1 = require("../../utils/tokenManage");
 const createUserToken = (payload) => __awaiter(void 0, void 0, void 0, function* () {
-    const { role, email, fullName, password, phone } = payload;
+    const { email, fullName, password, phone } = payload;
+    const role = user_constants_1.USER_ROLE.CUSTOMER;
     // user role check
-    if (!(role === user_constants_1.USER_ROLE.ADMIN || role === user_constants_1.USER_ROLE.CUSTOMER)) {
-        throw new AppError_1.default(http_status_1.default.BAD_REQUEST, 'User data is not valid !!');
-    }
     // user exist check
     const userExist = yield exports.userService.getUserByEmail(email);
     if (userExist) {
@@ -103,6 +101,7 @@ const otpVerifyAndCreateUser = (_a) => __awaiter(void 0, [_a], void 0, function*
         token,
         access_secret: config_1.default.jwt_access_secret,
     });
+    console.log(decodeData);
     if (!decodeData) {
         throw new AppError_1.default(http_status_1.default.BAD_REQUEST, 'You are not authorised');
     }
@@ -150,7 +149,7 @@ const updateUser = (id, payload) => __awaiter(void 0, void 0, void 0, function* 
 const getAllUserQuery = (query) => __awaiter(void 0, void 0, void 0, function* () {
     const userQuery = new QueryBuilder_1.default(user_models_1.User.find({}), query)
         .search([''])
-        .filter()
+        .filter([''])
         .sort()
         .paginate()
         .fields();
@@ -204,13 +203,8 @@ const getAllUserRatio = (year) => __awaiter(void 0, void 0, void 0, function* ()
     return fullUserRatios;
 });
 const getUserById = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield user_models_1.User.findById(id).populate({
-        path: 'purchesPackageId', // First level population
-        populate: {
-            path: 'package_id',
-            model: 'SubscriptionPlan',
-        },
-    });
+    const result = yield user_models_1.User.findById(id);
+    console.log(result);
     if (!result) {
         throw new AppError_1.default(http_status_1.default.NOT_FOUND, 'User not found');
     }
