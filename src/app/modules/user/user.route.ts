@@ -27,9 +27,8 @@ userRoutes
     auth(USER_ROLE.ADMIN, USER_ROLE.CUSTOMER),
     userController.getMyProfile,
   )
-  .get('/all-users', userController.getAllUsers)
-  .get('/all-users-count', userController.getAllUserCount)
-  .get('/all-users-rasio', userController.getAllUserRasio)
+  .get('/all-users', auth(USER_ROLE.ADMIN), userController.getAllUsers)
+
   .get('/:id', userController.getUserById)
 
   .patch(
@@ -44,9 +43,11 @@ userRoutes
     auth(USER_ROLE.ADMIN, USER_ROLE.CUSTOMER),
     userController.deleteMyAccount,
   )
-  .delete(
+
+  //soft delete
+  .patch(
     '/:id',
-    auth(USER_ROLE.ADMIN, USER_ROLE.CUSTOMER),
+    auth(USER_ROLE.ADMIN),
     userController.blockedUser,
   );
 

@@ -16,7 +16,7 @@ const getAllNotificationQuery = async (
 ) => {
   const notificationQuery = new QueryBuilder(Notification.find({ userId }), query)
     .search([''])
-    .filter()
+    .filter([''])
     .sort()
     .paginate()
     .fields();
@@ -34,7 +34,7 @@ const getAllNotificationByAdminQuery = async (
     query,
   )
     .search([''])
-    .filter()
+    .filter([''])
     .sort()
     .paginate()
     .fields();
