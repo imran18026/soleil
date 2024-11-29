@@ -37,6 +37,8 @@ const addNewProduct = async (
       category: productData.category,
     }).sort({ createdAt: -1 });
 
+    console.log(lastProduct);
+
     let lastNumber = 0;
     if (
       lastProduct &&
