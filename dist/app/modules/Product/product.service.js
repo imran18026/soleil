@@ -41,6 +41,7 @@ const addNewProduct = (files, productData) => __awaiter(void 0, void 0, void 0, 
         const lastProduct = yield product_model_1.Product.findOne({
             category: productData.category,
         }).sort({ createdAt: -1 });
+        console.log(lastProduct);
         let lastNumber = 0;
         if (lastProduct &&
             (lastProduct === null || lastProduct === void 0 ? void 0 : lastProduct.productId.startsWith(isCategoryExist.addId))) {

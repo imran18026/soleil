@@ -7,6 +7,7 @@ const otp_routes_1 = require("../modules/otp/otp.routes");
 const notification_route_1 = require("../modules/notification/notification.route");
 const category_route_1 = require("../modules/Category/category.route");
 const product_route_1 = require("../modules/Product/product.route");
+const subscriptionPlan_route_1 = require("../modules/SubscriptionPlan/subscriptionPlan.route");
 const router = (0, express_1.Router)();
 const moduleRoutes = [
     {
@@ -32,6 +33,10 @@ const moduleRoutes = [
     {
         path: '/products',
         route: product_route_1.ProductsRoutes,
+    },
+    {
+        path: '/subscriptionsplans',
+        route: subscriptionPlan_route_1.SubscriptionPlanRoutes,
     },
 ];
 moduleRoutes.forEach((route) => router.use(route.path, route.route));
