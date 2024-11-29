@@ -1,38 +1,38 @@
-import { Router } from 'express';
+import express, { Router } from 'express';
 import auth from '../../middleware/auth';
 import { USER_ROLE } from '../user/user.constants';
 import validateRequest from '../../middleware/validateRequest';
 import { NotificationController } from './notification.controller';
 
-const notificationRoutes = Router();
+const router = express.Router();
 
-notificationRoutes.post(
+router.post(
   '/create-notification',
   //   auth(USER_ROLE.USER),
   //   validateRequest(paymnetValidation),
   NotificationController.createNotification,
 );
 
-notificationRoutes.get(
+router.get(
   '',
-  auth(USER_ROLE.ADMIN,USER_ROLE.CUSTOMER),
+  auth(USER_ROLE.ADMIN, USER_ROLE.CUSTOMER),
   NotificationController.getAllNotificationByUser,
 );
-notificationRoutes.get(
+router.get(
   '/admin-all',
   auth(USER_ROLE.ADMIN),
   NotificationController.getAllNotificationByAdmin,
 );
-notificationRoutes.get('/:id', NotificationController.getSingleNotification);
-notificationRoutes.delete(
+router.get('/:id', NotificationController.getSingleNotification);
+router.delete(
   '/:id',
   auth(USER_ROLE.ADMIN, USER_ROLE.CUSTOMER),
   NotificationController.deletedNotification,
 );
-notificationRoutes.delete(
+router.delete(
   '/admin/:id',
   auth(USER_ROLE.ADMIN, USER_ROLE.CUSTOMER),
   NotificationController.deletedAdminNotification,
 );
 
-export default notificationRoutes;
+export const NotificationRoutes = router;

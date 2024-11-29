@@ -1,13 +1,11 @@
 // File: category.routes.ts
 // Description: Express routes for Category module
 
-import express, { NextFunction, Request, request, Response } from 'express';
-import { categoryValidations } from './category.validation';
+import express, { NextFunction, Request, Response } from 'express';
 import { FileUploadHelper } from '../../helpers/fileUploadHelpers';
 import validateRequest from '../../middleware/validateRequest';
-import { USER_ROLE } from '../user/user.constants';
-import auth from '../../middleware/auth';
 import { CategoryController } from './category.controller';
+import { categoryValidations } from './category.validation';
 
 const router = express.Router();
 

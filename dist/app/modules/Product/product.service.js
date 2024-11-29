@@ -15,9 +15,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ProductService = void 0;
 const http_status_1 = __importDefault(require("http-status"));
 const mongoose_1 = __importDefault(require("mongoose"));
-const FileUploadHelper_1 = require("../../../helpers/FileUploadHelper");
 const QueryBuilder_1 = __importDefault(require("../../builder/QueryBuilder"));
-const AppError_1 = __importDefault(require("../../errors/AppError"));
+const AppError_1 = __importDefault(require("../../error/AppError"));
+const fileUploadHelpers_1 = require("../../helpers/fileUploadHelpers");
 const category_model_1 = require("../Category/category.model");
 const product_model_1 = require("./product.model");
 /**
@@ -34,43 +34,45 @@ const addNewProduct = (files, productData) => __awaiter(void 0, void 0, void 0, 
     session.startTransaction();
     try {
         // Upload images to Cloudinary
-        const uploadedImages = yield FileUploadHelper_1.FileUploadHelper.uploadMultipleToCloudinary(files);
-        const createdProducts = [];
+        if (!files)
+            throw new AppError_1.default(http_status_1.default.BAD_REQUEST, 'Images are required');
+        const uploadedImages = yield fileUploadHelpers_1.FileUploadHelper.uploadMultipleToCloudinary(files);
+        const ProductsArray = [];
         const lastProduct = yield product_model_1.Product.findOne({
             category: productData.category,
-        })
-            .sort({ createdAt: -1 })
-            .session(session);
+        }).sort({ createdAt: -1 });
         let lastNumber = 0;
-        if (lastProduct === null || lastProduct === void 0 ? void 0 : lastProduct.productID.startsWith(isCategoryExist.addID)) {
-            lastNumber = parseInt(lastProduct.productID.replace(isCategoryExist.addID, ''), 10);
+        if (lastProduct &&
+            (lastProduct === null || lastProduct === void 0 ? void 0 : lastProduct.productId.startsWith(isCategoryExist.addId))) {
+            lastNumber = parseInt(lastProduct.productId.replace(isCategoryExist.addId, ''), 10);
         }
-        const Data = [];
         if (total && typeof total === 'number')
             for (let i = 0; i < total; i++) {
-                const productNumber = lastNumber + i + 1;
-                const productID = `${isCategoryExist.addID}${productNumber
+                const productNumber = lastNumber + 1 + i;
+                const productId = `${isCategoryExist.addId}${productNumber
                     .toString()
                     .padStart(5, '0')}`;
-                const productDataCopy = Object.assign({}, productData);
-                productDataCopy.productID = productID;
-                productDataCopy.qrCodeUrl = `http://localhost:5000/api/v1/qrcode/${productID}`;
-                productDataCopy.imageUlrs = uploadedImages;
-                Data.push(productDataCopy);
+                const singleProduct = Object.assign({}, productData);
+                singleProduct.productId = productId;
+                singleProduct.qrCodeUrl = `http://localhost:5000/api/v1/qrcode/${productId}`;
+                singleProduct.imageUlrs = uploadedImages;
+                ProductsArray.push(singleProduct);
             }
-        console.log(Data);
-        const createdProduct = yield product_model_1.Product.create(Data, { session });
-        createdProducts.push(...createdProduct);
+        const bulkOps = ProductsArray.map((product) => ({
+            insertOne: { document: product },
+        }));
+        const result = yield product_model_1.Product.bulkWrite(bulkOps, { ordered: true });
         yield session.commitTransaction();
-        session.endSession();
-        return createdProducts;
+        yield session.endSession();
+        return result;
     }
     catch (error) {
         // Rollback transaction in case of failure
         yield session.abortTransaction();
         session.endSession();
-        throw new AppError_1.default(http_status_1.default.INTERNAL_SERVER_ERROR, `Failed to create products`);
+        throw new AppError_1.default(http_status_1.default.INTERNAL_SERVER_ERROR, `Failed to create products, ${error}`);
     }
+    // return [];
 });
 /**
  * Get all products with filtering, sorting, and pagination.

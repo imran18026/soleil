@@ -1,8 +1,7 @@
-import { v2 as cloudinary, UploadApiResponse } from 'cloudinary';
+import { v2 as cloudinary } from 'cloudinary';
 import fs from 'fs';
 import multer from 'multer';
 import httpStatus from 'http-status';
-
 import AppError from '../error/AppError';
 import config from '../config';
 import { ICloudinaryResponse, IUploadFile } from '../interface/file';
@@ -58,22 +57,6 @@ const deleteFromCloudinary = async (url: string) => {
   if (!publicId) {
     throw new AppError(httpStatus.BAD_REQUEST, 'Invalid file URL');
   }
-
-  // const result = await cloudinary.uploader.destroy(publicId);
-  // console.log(result);
-
-  // return new Promise((resolve, reject) => {
-  //   cloudinary.uploader.destroy(publicId, (error, result) => {
-  //     console.log(error, result);
-  //     if (error) {
-  //       reject(new Error(`Error deleting from Cloudinary: ${error.message}`));
-  //     } else if (result !== 'ok') {
-  //       reject(new Error(`Failed to delete file: ${result.result}`));
-  //     } else {
-  //       resolve('File deleted successfully');
-  //     }
-  //   });
-  // });
 
   return new Promise((resolve, reject) => {
     cloudinary.uploader.destroy(publicId, (error, result) => {

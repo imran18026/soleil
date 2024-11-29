@@ -17,7 +17,7 @@ const http_status_1 = __importDefault(require("http-status"));
 const product_service_1 = require("./product.service");
 const catchAsync_1 = __importDefault(require("../../utils/catchAsync"));
 const sendResponse_1 = __importDefault(require("../../utils/sendResponse"));
-const AppError_1 = __importDefault(require("../../errors/AppError"));
+const AppError_1 = __importDefault(require("../../error/AppError"));
 /**
  * Create a new product.
  */
