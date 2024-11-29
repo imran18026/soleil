@@ -61,20 +61,6 @@ const deleteFromCloudinary = (url) => __awaiter(void 0, void 0, void 0, function
     if (!publicId) {
         throw new AppError_1.default(http_status_1.default.BAD_REQUEST, 'Invalid file URL');
     }
-    // const result = await cloudinary.uploader.destroy(publicId);
-    // console.log(result);
-    // return new Promise((resolve, reject) => {
-    //   cloudinary.uploader.destroy(publicId, (error, result) => {
-    //     console.log(error, result);
-    //     if (error) {
-    //       reject(new Error(`Error deleting from Cloudinary: ${error.message}`));
-    //     } else if (result !== 'ok') {
-    //       reject(new Error(`Failed to delete file: ${result.result}`));
-    //     } else {
-    //       resolve('File deleted successfully');
-    //     }
-    //   });
-    // });
     return new Promise((resolve, reject) => {
         cloudinary_1.v2.uploader.destroy(publicId, (error, result) => {
             if (error) {

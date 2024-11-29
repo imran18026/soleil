@@ -7,10 +7,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CategoryRoutes = void 0;
 const express_1 = __importDefault(require("express"));
-const category_validation_1 = require("./category.validation");
 const fileUploadHelpers_1 = require("../../helpers/fileUploadHelpers");
 const validateRequest_1 = __importDefault(require("../../middleware/validateRequest"));
 const category_controller_1 = require("./category.controller");
+const category_validation_1 = require("./category.validation");
 const router = express_1.default.Router();
 router.post('/create-category', 
 // auth(USER_ROLE.admin),
