@@ -13,6 +13,7 @@ export type TProduct = {
   imageUlrs: string[]; // Cloudinary URLs for product images
   isHidden: boolean;
   isDeleted: boolean; // Soft delete flag
+  addId: string;
   createdAt: Date;
   updatedAt: Date;
 };

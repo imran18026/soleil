@@ -6,6 +6,7 @@ import { NotificationRoutes } from '../modules/notification/notification.route';
 import { CategoryRoutes } from '../modules/Category/category.route';
 import { ProductsRoutes } from '../modules/Product/product.route';
 import { SubscriptionPlanRoutes } from '../modules/SubscriptionPlan/subscriptionPlan.route';
+import { OrderRoutes } from '../modules/Order/order.route';
 
 const router = Router();
 
@@ -37,6 +38,10 @@ const moduleRoutes = [
   {
     path: '/subscriptionsplans',
     route: SubscriptionPlanRoutes,
+  },
+  {
+    path: '/order',
+    route: OrderRoutes,
   },
 ];
 moduleRoutes.forEach((route) => router.use(route.path, route.route));

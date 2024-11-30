@@ -13,6 +13,7 @@ const productSchema = new Schema<TProduct, ProductModel>(
     category: { type: Schema.Types.ObjectId, ref: 'Category', required: true },
     qrCodeUrl: { type: String, required: true },
     imageUlrs: [{ type: String, required: true }],
+    addId: { type: String, required: true },
     isHidden: { type: Boolean, default: false },
     isDeleted: { type: Boolean, default: false },
   },

@@ -33,22 +33,21 @@ const addNewProduct = async (
 
     const ProductsArray: TProduct[] = [];
 
-    const lastProduct = await Product.findOne({
+    const lastProduct = await Product.find({
       category: productData.category,
-    }).sort({ createdAt: -1 });
+      addId: isCategoryExist.addId,
+    });
 
-    console.log(lastProduct);
-
-    let lastNumber = 0;
-    if (
-      lastProduct &&
-      lastProduct?.productId.startsWith(isCategoryExist.addId)
-    ) {
-      lastNumber = parseInt(
-        lastProduct.productId.replace(isCategoryExist.addId, ''),
-        10,
-      );
-    }
+    let lastNumber = lastProduct?.length || 0;
+    // if (
+    //   lastProduct &&
+    //   lastProduct?.productId.startsWith(isCategoryExist.addId)
+    // ) {
+    //   lastNumber = parseInt(
+    //     lastProduct.productId.replace(isCategoryExist.addId, ''),
+    //     10,
+    //   );
+    // }
 
     if (total && typeof total === 'number')
       for (let i = 0; i < total; i++) {
@@ -61,6 +60,7 @@ const addNewProduct = async (
         singleProduct.productId = productId;
         singleProduct.qrCodeUrl = `http://localhost:5000/api/v1/qrcode/${productId}`;
         singleProduct.imageUlrs = uploadedImages;
+        singleProduct.addId = isCategoryExist.addId;
 
         ProductsArray.push(singleProduct);
       }
