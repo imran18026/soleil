@@ -12,6 +12,7 @@ const productSchema = new mongoose_1.Schema({
     category: { type: mongoose_1.Schema.Types.ObjectId, ref: 'Category', required: true },
     qrCodeUrl: { type: String, required: true },
     imageUlrs: [{ type: String, required: true }],
+    addId: { type: String, required: true },
     isHidden: { type: Boolean, default: false },
     isDeleted: { type: Boolean, default: false },
 }, {

@@ -38,15 +38,20 @@ const addNewProduct = (files, productData) => __awaiter(void 0, void 0, void 0, 
             throw new AppError_1.default(http_status_1.default.BAD_REQUEST, 'Images are required');
         const uploadedImages = yield fileUploadHelpers_1.FileUploadHelper.uploadMultipleToCloudinary(files);
         const ProductsArray = [];
-        const lastProduct = yield product_model_1.Product.findOne({
+        const lastProduct = yield product_model_1.Product.find({
             category: productData.category,
-        }).sort({ createdAt: -1 });
-        console.log(lastProduct);
-        let lastNumber = 0;
-        if (lastProduct &&
-            (lastProduct === null || lastProduct === void 0 ? void 0 : lastProduct.productId.startsWith(isCategoryExist.addId))) {
-            lastNumber = parseInt(lastProduct.productId.replace(isCategoryExist.addId, ''), 10);
-        }
+            addId: isCategoryExist.addId,
+        });
+        let lastNumber = (lastProduct === null || lastProduct === void 0 ? void 0 : lastProduct.length) || 0;
+        // if (
+        //   lastProduct &&
+        //   lastProduct?.productId.startsWith(isCategoryExist.addId)
+        // ) {
+        //   lastNumber = parseInt(
+        //     lastProduct.productId.replace(isCategoryExist.addId, ''),
+        //     10,
+        //   );
+        // }
         if (total && typeof total === 'number')
             for (let i = 0; i < total; i++) {
                 const productNumber = lastNumber + 1 + i;
@@ -57,6 +62,7 @@ const addNewProduct = (files, productData) => __awaiter(void 0, void 0, void 0, 
                 singleProduct.productId = productId;
                 singleProduct.qrCodeUrl = `http://localhost:5000/api/v1/qrcode/${productId}`;
                 singleProduct.imageUlrs = uploadedImages;
+                singleProduct.addId = isCategoryExist.addId;
                 ProductsArray.push(singleProduct);
             }
         const bulkOps = ProductsArray.map((product) => ({
