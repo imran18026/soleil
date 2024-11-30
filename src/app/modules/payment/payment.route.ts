@@ -5,27 +5,32 @@ import { USER_ROLE } from '../user/user.constants';
 
 // import { auth } from "../../middlewares/auth.js";
 
-const paymentRouter = express.Router();
+const router = express.Router();
 
-paymentRouter
-  .post('/add-payment', 
-    // auth(USER_ROLE.CUSTOMER), 
-    paymentController.addPayment)
-  .get('/', 
-    // auth(USER_ROLE.ADMIN), 
-    paymentController.getAllPayment)
-  .get('/:id',
-    //  auth(USER_ROLE.ADMIN), 
-  paymentController.getSinglePayment)
-  .get(
-    '/admin',
-    // auth(USER_ROLE.ADMIN),
-    paymentController.getAllPaymentByMentor,
-  )
-  .delete(
-    '/:id',
-    // auth(USER_ROLE.ADMIN),
-    paymentController.deleteSinglePayment,
-  );
+router.post(
+  '/add-payment',
+  // auth(USER_ROLE.CUSTOMER),
+  paymentController.addPayment,
+);
+router.get(
+  '/',
+  // auth(USER_ROLE.ADMIN),
+  paymentController.getAllPayment,
+);
+router.get(
+  '/:id',
+  //  auth(USER_ROLE.ADMIN),
+  paymentController.getSinglePayment,
+);
+router.get(
+  '/admin',
+  // auth(USER_ROLE.ADMIN),
+  paymentController.getAllPaymentByMentor,
+);
+router.delete(
+  '/:id',
+  // auth(USER_ROLE.ADMIN),
+  paymentController.deleteSinglePayment,
+);
 
-export default paymentRouter;
+export const PaymentRouter = router;
