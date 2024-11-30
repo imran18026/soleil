@@ -4,6 +4,7 @@ import { z } from 'zod';
 export const paymentSchema = z.object({
   userId: z.string().min(1, 'Mentor ID is required.'),
   productId: z.string().min(1, 'Mentor ID is required.'),
+  currency: z.enum(['USD', 'EUR', 'GBP', 'INR']).default('USD'),
   method: z.enum(['bank', 'paypal_pay', 'bank_transfer']),
   status: z.enum(['pending', 'success', 'failed']).default('pending'),
   transactionId: z.string().min(1, 'Transaction ID is required.'),

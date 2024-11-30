@@ -47,14 +47,14 @@ const checkOtpByEmail = (email) => __awaiter(void 0, void 0, void 0, function* (
     return { isExist, isExpireOtp };
 });
 const otpMatch = (email, otp) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log(email, otp);
+    // console.log(email, otp);
     const isOtpMatch = yield otp_model_1.default.findOne({
         sentTo: email,
         otp,
         status: 'pending',
         expiredAt: { $gt: new Date() },
     });
-    console.log({ isOtpMatch });
+    // console.log({ isOtpMatch });
     return isOtpMatch;
 });
 const updateOtpByEmail = (email, payload) => __awaiter(void 0, void 0, void 0, function* () {

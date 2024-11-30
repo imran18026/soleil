@@ -32,10 +32,10 @@ const paymentSchema = new Schema<TPayment>(
       enum: ['pending', 'success', 'failed'],
       default: 'pending',
     },
-    getWayResponse: {
-      type: Object,
-      required: true,
-    },
+    // getWayResponse: {
+    //   type: Object,
+    //   required: true,
+    // },
     transactionId: {
       type: String,
       required: true,
