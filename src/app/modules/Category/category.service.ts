@@ -11,6 +11,7 @@ import { Category } from './category.model';
 import { FileUploadHelper } from '../../helpers/fileUploadHelpers';
 import AppError from '../../error/AppError';
 import httpStatus from 'http-status';
+import { Product } from '../Product/product.model';
 
 const addNewCategory = async (
   file: Express.Multer.File,
@@ -48,6 +49,27 @@ const getAllCategories = async (query: Record<string, unknown>) => {
   const meta = await categoryQuery.countTotal();
   const result = await categoryQuery.modelQuery;
   return { meta, result };
+};
+
+const getProductsbyCategory = async (id: string) => {
+  const uniqueProductNames = await Product.distinct('productName', {
+    category: id,
+  });
+  const products = await Promise.all(
+    uniqueProductNames.map(async (productName) => {
+      return Product.findOne({
+        category: id,
+        productName,
+        isSold: false,
+        isDeleted: false,
+        isHidden: false,
+      });
+    }),
+  );
+
+  const result = products.filter(Boolean); // remove any null values
+
+  return result;
 };
 
 /**
@@ -111,6 +133,7 @@ export const CategoryService = {
   addNewCategory,
   getAllCategories,
   getCategoryById,
+  getProductsbyCategory,
   updateCategory,
   deleteCategory,
   deleteCategoryFromDB,

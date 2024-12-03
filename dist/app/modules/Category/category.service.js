@@ -22,6 +22,7 @@ const category_model_1 = require("./category.model");
 const fileUploadHelpers_1 = require("../../helpers/fileUploadHelpers");
 const AppError_1 = __importDefault(require("../../error/AppError"));
 const http_status_1 = __importDefault(require("http-status"));
+const product_model_1 = require("../Product/product.model");
 const addNewCategory = (file, data) => __awaiter(void 0, void 0, void 0, function* () {
     const isCategoryExist = yield category_model_1.Category.findOne({
         $or: [{ addID: data === null || data === void 0 ? void 0 : data.addId }, { categoryName: data === null || data === void 0 ? void 0 : data.categoryName }],
@@ -50,6 +51,22 @@ const getAllCategories = (query) => __awaiter(void 0, void 0, void 0, function* 
     const meta = yield categoryQuery.countTotal();
     const result = yield categoryQuery.modelQuery;
     return { meta, result };
+});
+const getProductsbyCategory = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    const uniqueProductNames = yield product_model_1.Product.distinct('productName', {
+        category: id,
+    });
+    const products = yield Promise.all(uniqueProductNames.map((productName) => __awaiter(void 0, void 0, void 0, function* () {
+        return product_model_1.Product.findOne({
+            category: id,
+            productName,
+            isSold: false,
+            isDeleted: false,
+            isHidden: false,
+        });
+    })));
+    const result = products.filter(Boolean); // remove any null values
+    return result;
 });
 /**
  * Get a single category by ID.
@@ -99,6 +116,7 @@ exports.CategoryService = {
     addNewCategory,
     getAllCategories,
     getCategoryById,
+    getProductsbyCategory,
     updateCategory,
     deleteCategory,
     deleteCategoryFromDB,

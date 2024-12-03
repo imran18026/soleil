@@ -14,6 +14,7 @@ const productSchema = new Schema<TProduct, ProductModel>(
     qrCodeUrl: { type: String, required: true },
     imageUlrs: [{ type: String, required: true }],
     addId: { type: String, required: true },
+    isSold: { type: Boolean, default: false },
     isHidden: { type: Boolean, default: false },
     isDeleted: { type: Boolean, default: false },
   },

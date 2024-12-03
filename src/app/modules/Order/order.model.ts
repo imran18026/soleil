@@ -16,7 +16,7 @@ const orderSchema = new Schema<TOrder, OrderModel>(
       ref: 'Product',
       required: true,
     },
-    payment: {
+    paymentId: {
       type: Schema.Types.ObjectId,
       ref: 'Payment', // Reference to the Payment collection
       default: null,

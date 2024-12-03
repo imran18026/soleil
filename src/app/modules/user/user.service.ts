@@ -232,7 +232,6 @@ const getAllUserRatio = async (year: number) => {
     const found = userRatios.find((data) => data.month === monthData.month);
     return found ? found : monthData; // Use found data or default to 0
   });
-
   return fullUserRatios;
 };
 

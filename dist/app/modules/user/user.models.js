@@ -45,6 +45,11 @@ const userSchema = new mongoose_1.Schema({
         type: String,
         required: true,
     },
+    orderProduct: {
+        type: Number,
+        required: true,
+        default: 0
+    },
     isActive: {
         type: Boolean,
         default: true,

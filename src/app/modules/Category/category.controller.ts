@@ -17,6 +17,8 @@ const addNewCategory = catchAsync(async (req: Request, res: Response) => {
   const categoryData: Partial<TCategory> = req.body;
   const { file } = req;
 
+  console.log(file, categoryData);
+
   if (!file) throw new AppError(httpStatus.BAD_REQUEST, 'Image is required');
 
   const result = await CategoryService.addNewCategory(file, categoryData);
@@ -43,6 +45,19 @@ const getCategories = catchAsync(async (req: Request, res: Response) => {
     meta: categories.meta,
   });
 });
+const getProductsbyCategory = catchAsync(
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const resultData = await CategoryService.getProductsbyCategory(id);
+
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Products by category retrieved successfully!',
+      data: resultData,
+    });
+  },
+);
 
 /**
  * Get a single category by ID.
@@ -110,6 +125,7 @@ export const CategoryController = {
   addNewCategory,
   getCategories,
   getCategoryById,
+  getProductsbyCategory,
   updateCategory,
   deleteCategory,
   deleteCategoryFromDB,

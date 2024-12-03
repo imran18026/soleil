@@ -25,6 +25,8 @@ router.post(
 
 router.get('/', CategoryController.getCategories);
 
+router.get('/products/:id',CategoryController.getProductsbyCategory)
+
 router.get('/:id', CategoryController.getCategoryById);
 
 router.patch(
