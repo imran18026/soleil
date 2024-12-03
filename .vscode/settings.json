@@ -1,7 +1,7 @@
 {
-  "workbench.colorTheme": "Dracula",
+  "workbench.colorTheme": "Night Owl (No Italics)",
   "tabnine.experimentalAutoImports": true,
-  "workbench.iconTheme": "material-icon-theme",
+  "workbench.iconTheme": "vs-nomo-dark",
   "files.autoSave": "afterDelay",
   "background.windowBackgrounds": ["./bg.png"],
   "editor.defaultFormatter": "esbenp.prettier-vscode",

@@ -13,6 +13,7 @@ export interface TUserCreate {
 export interface TUser extends TUserCreate {
   _id: string;
   image: string;
+  orderProduct:number;
   isActive: boolean;
   isDeleted: boolean;
 }

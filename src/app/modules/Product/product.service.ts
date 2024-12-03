@@ -71,6 +71,10 @@ const addNewProduct = async (
       };
     }
 
+    await Category.findByIdAndUpdate(isCategoryExist._id,{
+      $inc:{'quantity':total}
+    })
+
     const bulkOps: Idata[] = ProductsArray.map((product) => ({
       insertOne: { document: product },
     }));

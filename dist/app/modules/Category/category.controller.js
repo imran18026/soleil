@@ -26,6 +26,7 @@ const AppError_1 = __importDefault(require("../../error/AppError"));
 const addNewCategory = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const categoryData = req.body;
     const { file } = req;
+    console.log(file, categoryData);
     if (!file)
         throw new AppError_1.default(http_status_1.default.BAD_REQUEST, 'Image is required');
     const result = yield category_service_1.CategoryService.addNewCategory(file, categoryData);
@@ -47,6 +48,16 @@ const getCategories = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, 
         message: 'Categories retrieved successfully!',
         data: categories.result,
         meta: categories.meta,
+    });
+}));
+const getProductsbyCategory = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    const resultData = yield category_service_1.CategoryService.getProductsbyCategory(id);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: 'Products by category retrieved successfully!',
+        data: resultData,
     });
 }));
 /**
@@ -112,6 +123,7 @@ exports.CategoryController = {
     addNewCategory,
     getCategories,
     getCategoryById,
+    getProductsbyCategory,
     updateCategory,
     deleteCategory,
     deleteCategoryFromDB,

@@ -14,6 +14,7 @@ export type TProduct = {
   isHidden: boolean;
   isDeleted: boolean; // Soft delete flag
   addId: string;
+  isSold: boolean;
   createdAt: Date;
   updatedAt: Date;
 };

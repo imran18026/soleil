@@ -22,15 +22,33 @@ const isAllAvailable = async (
     throw new Error('User does not exist');
   }
 
-  const product = await Product.findOne({
+  const productName = await Product.findOne({
     _id: productId,
+  });
+
+  if (!productName) {
+    throw new Error('Product does not exist');
+  }
+
+  const product = await Product.find({
+    productName: productName?.productName,
+    isHidden: false,
+    isSold: false,
     isDeleted: false,
     isAvailable: true,
   });
 
-  if (!product) {
-    throw new Error('Product does not exist');
+  if (product.length < quantity) {
+    throw new Error(` Only ${product.length} Products is available`);
   }
+};
+
+const preOrderChecker = async (
+  userId: Types.ObjectId,
+  productId: Types.ObjectId,
+  quantity: number,
+): Promise<void> => {
+  await isAllAvailable(userId, productId, quantity);
 };
 
 /**
@@ -48,8 +66,8 @@ const createOrder = async (
     const product = await Product.findById(data.product);
 
     // Optional: Check if payment exists and is successful
-    if (data.payment) {
-      const payment = await Payment.findById(data.payment);
+    if (data.paymentId) {
+      const payment = await Payment.findById(data.paymentId);
       if (!payment || payment.status !== 'success') {
         throw new Error('Payment is invalid or not completed');
       }
@@ -110,6 +128,7 @@ const deleteOrder = async (id: string): Promise<TOrder | null> => {
 export const OrderService = {
   createOrder,
   getAllOrders,
+  preOrderChecker,
   myOrders,
   getOrderById,
   updateOrder,

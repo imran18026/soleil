@@ -11,7 +11,6 @@ const createOrder = catchAsync(async (req: Request, res: Response) => {
   const orderData = req.body;
 
   const result = await OrderService.createOrder(orderData);
-
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
     success: true,
@@ -22,6 +21,20 @@ const createOrder = catchAsync(async (req: Request, res: Response) => {
 
 const getAllOrders = catchAsync(async (req: Request, res: Response) => {
   const result = await OrderService.getAllOrders(req.query);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Orders retrieved successfully!',
+    data: result,
+  });
+});
+const preOrderChecker = catchAsync(async (req: Request, res: Response) => {
+  const {userId, productId, quantity} = req.body
+  const result = await OrderService.preOrderChecker(
+    userId,
+    productId,
+    quantity,
+  );
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -79,6 +92,7 @@ export const OrderController = {
   createOrder,
   getAllOrders,
   myOrders,
+  preOrderChecker,
   getOrderById,
   updateOrder,
   deleteOrder,
