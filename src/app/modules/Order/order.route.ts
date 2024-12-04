@@ -12,13 +12,13 @@ const router = express.Router();
 
 router.get(
   '/pre-orders',
-  auth(USER_ROLE.ADMIN, USER_ROLE.CUSTOMER),
+  // auth(USER_ROLE.ADMIN, USER_ROLE.CUSTOMER),
   OrderController.preOrderChecker,
 );
 router.post(
   '/create-order',
-  auth(USER_ROLE.CUSTOMER),
-  validateRequest(orderValidations.createOrderValidationSchema),
+  // auth(USER_ROLE.CUSTOMER),
+  // validateRequest(orderValidations.createOrderValidationSchema),
   OrderController.createOrder,
 );
 

@@ -8,34 +8,27 @@ const paymentSchema = new Schema<TPayment>(
       ref: 'User',
       required: true,
     },
-    productId: {
-      type: Schema.Types.ObjectId,
-      ref: 'Product',
-      required: true,
-    },
+
     amount: {
       type: Number,
       required: true,
     },
-    currency: {
-      type: String,
-      enum: ['USD', 'EUR', 'GBP', 'INR'],
-      required: true,
-    },
+
     method: {
       type: String,
-      enum: ['card', 'mobile_money', 'bank_transfer'],
+      enum: ['Wave', 'Orange_Money', 'Mtn_Money', 'Moov_Money'],
       required: true,
     },
+
     status: {
       type: String,
       enum: ['pending', 'success', 'failed'],
       default: 'pending',
     },
-    // getWayResponse: {
-    //   type: Object,
-    //   required: true,
-    // },
+    isAlreadyUsed: {
+      type: Boolean,
+      default: false,
+    },
     transactionId: {
       type: String,
       required: true,

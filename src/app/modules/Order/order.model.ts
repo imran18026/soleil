@@ -6,14 +6,13 @@ import { OrderModel, TOrder } from './order.interface';
 
 const orderSchema = new Schema<TOrder, OrderModel>(
   {
-    user: {
+    userId: {
       type: Schema.Types.ObjectId,
       ref: 'User',
       required: true,
     },
-    product: {
-      type: Schema.Types.ObjectId,
-      ref: 'Product',
+    productIds: {
+      type: [String],
       required: true,
     },
     paymentId: {

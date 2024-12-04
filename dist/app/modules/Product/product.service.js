@@ -66,7 +66,7 @@ const addNewProduct = (files, productData) => __awaiter(void 0, void 0, void 0, 
                 ProductsArray.push(singleProduct);
             }
         yield category_model_1.Category.findByIdAndUpdate(isCategoryExist._id, {
-            $inc: { 'quantity': total }
+            $inc: { quantity: total, available: total },
         });
         const bulkOps = ProductsArray.map((product) => ({
             insertOne: { document: product },

@@ -41,7 +41,7 @@ const moduleRoutes = [
         route: subscriptionPlan_route_1.SubscriptionPlanRoutes,
     },
     {
-        path: '/order',
+        path: '/orders',
         route: order_route_1.OrderRoutes,
     },
     {

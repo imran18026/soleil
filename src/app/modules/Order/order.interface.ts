@@ -4,9 +4,9 @@
 import { Model, Types } from 'mongoose';
 
 export type TOrder = {
-  user: Types.ObjectId; // Reference to the user placing the order
-  product: Types.ObjectId; // Reference to the product
-  paymentId: Types.ObjectId | null; // Reference to the payment for this order
+  userId: Types.ObjectId; // Reference to the user placing the order
+  productIds: string[]; // Reference to the product
+  paymentId: Types.ObjectId; // Reference to the payment for this order
   quantity: number;
   totalAmount: number;
   status: 'New order' | 'In the procss' | 'Odrer delivered';

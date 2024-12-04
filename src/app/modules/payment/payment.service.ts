@@ -11,12 +11,6 @@ const addPaymentService = async (data: Partial<TPayment>) => {
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, 'User not found');
   }
-  const product = await Product.findById(data.productId);
-  if (!product || product.isHidden || product.isDeleted) {
-    throw new AppError(httpStatus.NOT_FOUND, 'Product not found');
-  }
-  data.amount = product.price;
-
   const result = await Payment.create(data);
 
   return result;

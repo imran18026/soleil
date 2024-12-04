@@ -27,7 +27,11 @@ userRoutes
     auth(USER_ROLE.ADMIN, USER_ROLE.CUSTOMER),
     userController.getMyProfile,
   )
-  .get('/all-users', auth(USER_ROLE.ADMIN), userController.getAllUsers)
+  .get(
+    '/all-users',
+    // auth(USER_ROLE.ADMIN),
+    userController.getAllUsers,
+  )
 
   .get('/:id', userController.getUserById)
 
@@ -45,10 +49,6 @@ userRoutes
   )
 
   //soft delete
-  .patch(
-    '/:id',
-    auth(USER_ROLE.ADMIN),
-    userController.blockedUser,
-  );
+  .patch('/:id', auth(USER_ROLE.ADMIN), userController.blockedUser);
 
 // export default userRoutes;
