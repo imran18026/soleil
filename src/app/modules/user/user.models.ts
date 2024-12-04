@@ -33,14 +33,18 @@ const userSchema = new Schema<TUser>(
       type: String,
       required: true,
     },
-    orderProduct:{
-      type:Number,
-      required:true,
-      default:0
+    orderdProducts: {
+      type: Number,
+      required: true,
+      default: 0,
     },
     isActive: {
       type: Boolean,
       default: true,
+    },
+    location: {
+      type: String,
+      default: '',
     },
     isDeleted: {
       type: Boolean,

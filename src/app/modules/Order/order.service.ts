@@ -8,15 +8,21 @@ import { TOrder } from './order.interface';
 import { Order } from './order.model';
 import { User } from '../user/user.models';
 import { Payment } from '../payment/payment.model';
+import { Category } from '../Category/category.model';
 
 /**
  * Checks product availability and user existence.
  */
+
+type preOrderCheckerResponse = {
+  productName?: string;
+  isValid: boolean;
+};
 const isAllAvailable = async (
-  userId: Types.ObjectId,
-  productId: Types.ObjectId,
+  userId: string,
+  productId: string,
   quantity: number,
-) => {
+): Promise<preOrderCheckerResponse> => {
   const user = await User.findOne({ _id: userId, isDeleted: false });
   if (!user) {
     throw new Error('User does not exist');
@@ -35,51 +41,106 @@ const isAllAvailable = async (
     isHidden: false,
     isSold: false,
     isDeleted: false,
-    isAvailable: true,
   });
 
   if (product.length < quantity) {
     throw new Error(` Only ${product.length} Products is available`);
   }
+  if (product.length >= quantity) {
+    return { productName: productName?.productName, isValid: true };
+  }
+  return { isValid: false };
 };
 
 const preOrderChecker = async (
-  userId: Types.ObjectId,
-  productId: Types.ObjectId,
+  userId: string,
+  productId: string,
   quantity: number,
-): Promise<void> => {
-  await isAllAvailable(userId, productId, quantity);
+): Promise<preOrderCheckerResponse> => {
+  const data = await isAllAvailable(userId, productId, quantity);
+  return data;
 };
 
 /**
  * Creates a new order with transaction and rollback.
  */
 const createOrder = async (
-  data: Partial<TOrder>,
-): Promise<TOrder | undefined> => {
+  data: Partial<TOrder> & { productName?: string },
+): Promise<TOrder | any> => {
+  if (data.paymentId) {
+    const payment = await Payment.findOne({
+      _id: data.paymentId,
+      isAlreadyUsed: false,
+    });
+    if (!payment || payment.status !== 'pending') {
+      throw new Error('Payment is invalid');
+    }
+  }
+
+  const user = await User.findById(data.userId);
+  if (!user) {
+    throw new Error('User not found');
+  }
+
+  const quantity = data?.quantity || 1;
+
+  const productIds = await Product.find({
+    productName: data?.productName,
+    isSold: false,
+    isHidden: false,
+  })
+    .select('_id')
+    .limit(quantity);
+
+  const productIdArray = productIds.map((item) => item._id.toString());
+  if (productIdArray.length === 0) {
+    throw new Error('Product not found');
+  }
+
+  delete data.productName;
+  data.productIds = [...productIdArray];
+  data.ispaymentDone = true;
+
   const session = await mongoose.startSession();
 
   try {
     session.startTransaction();
 
-    // Validate if the user and product exist
-    const product = await Product.findById(data.product);
+    productIdArray.map(async (id) => {
+      await Product.findByIdAndUpdate(id, {
+        isSold: true,
+      }),
+        { new: true, session };
+    });
 
-    // Optional: Check if payment exists and is successful
-    if (data.paymentId) {
-      const payment = await Payment.findById(data.paymentId);
-      if (!payment || payment.status !== 'success') {
-        throw new Error('Payment is invalid or not completed');
-      }
-    }
-    // Create the order
-    const order = await Order.create([data], { session });
-    // Update product quantity
-    await Product.findByIdAndUpdate(
-      data.product,
-      { $inc: { quantity: -Number(data.quantity) } },
-      { session },
+    const user = await User.findByIdAndUpdate(
+      data.userId,
+      {
+        $inc: { orderdProducts: quantity },
+      },
+      { new: true, session },
     );
+
+    const categoryId = await Product.findOne({ _id: productIds[0] }).select(
+      'category',
+    );
+
+    const value = await Category.findByIdAndUpdate(
+      categoryId?.category,
+      {
+        $inc: { available: -Number(quantity), attributed: Number(quantity) },
+      },
+      { new: true, session },
+    );
+    console.log(value);
+
+    await Payment.findByIdAndUpdate(
+      data.paymentId,
+      { isAlreadyUsed: true, status: 'success' },
+      { new: true, session },
+    );
+
+    const order = await Order.create([data], { session });
 
     await session.commitTransaction();
     return order[0];
@@ -90,6 +151,7 @@ const createOrder = async (
     await session.endSession();
   }
 };
+
 const getAllOrders = async (query: Record<string, unknown>) => {
   const orders = await Order.find(query).populate('user product');
   return orders;

@@ -45,14 +45,18 @@ const userSchema = new mongoose_1.Schema({
         type: String,
         required: true,
     },
-    orderProduct: {
+    orderdProducts: {
         type: Number,
         required: true,
-        default: 0
+        default: 0,
     },
     isActive: {
         type: Boolean,
         default: true,
+    },
+    location: {
+        type: String,
+        default: '',
     },
     isDeleted: {
         type: Boolean,
