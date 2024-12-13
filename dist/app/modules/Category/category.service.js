@@ -19,21 +19,18 @@ const promises_1 = require("fs/promises");
 const QueryBuilder_1 = __importDefault(require("../../builder/QueryBuilder"));
 const category_constant_1 = require("./category.constant");
 const category_model_1 = require("./category.model");
-const fileUploadHelpers_1 = require("../../helpers/fileUploadHelpers");
 const AppError_1 = __importDefault(require("../../error/AppError"));
 const http_status_1 = __importDefault(require("http-status"));
 const product_model_1 = require("../Product/product.model");
+const ProductInfo_model_1 = require("../ProductInfo/ProductInfo.model");
 const addNewCategory = (file, data) => __awaiter(void 0, void 0, void 0, function* () {
     const isCategoryExist = yield category_model_1.Category.findOne({
         $or: [{ addID: data === null || data === void 0 ? void 0 : data.addId }, { categoryName: data === null || data === void 0 ? void 0 : data.categoryName }],
     });
-    if (isCategoryExist && file.path) {
-        yield (0, promises_1.unlink)(file.path);
-        throw new Error('Category is already exists');
-    }
-    const uploadedImage = yield fileUploadHelpers_1.FileUploadHelper.uploadToCloudinary(file);
-    if (uploadedImage) {
-        data.imageUrl = uploadedImage.secure_url;
+    const ImageUrl = file.path.replace('public\\', '');
+    data.imageUrl = ImageUrl;
+    if (isCategoryExist) {
+        throw new AppError_1.default(http_status_1.default.CONFLICT, 'Category already exists');
     }
     const result = yield category_model_1.Category.create(data);
     return result;
@@ -53,20 +50,31 @@ const getAllCategories = (query) => __awaiter(void 0, void 0, void 0, function* 
     return { meta, result };
 });
 const getProductsbyCategory = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    const uniqueProductNames = yield product_model_1.Product.distinct('productName', {
-        category: id,
-    });
-    const products = yield Promise.all(uniqueProductNames.map((productName) => __awaiter(void 0, void 0, void 0, function* () {
-        return product_model_1.Product.findOne({
-            category: id,
-            productName,
-            isSold: false,
-            isDeleted: false,
-            isHidden: false,
-        });
-    })));
-    const result = products.filter(Boolean); // remove any null values
-    return result;
+    const productInfo = yield ProductInfo_model_1.ProductInfo.find({ categoryId: id });
+    const productArray = [];
+    for (let i = 0; i < productInfo.length; i++) {
+        const product = yield product_model_1.Product.find({
+            productInfoId: productInfo[i]._id,
+        }).populate('productInfoId');
+        productArray.push(...product);
+    }
+    return productArray;
+    // const uniqueProductNames = await Product.distinct('productName', {
+    //   category: id,
+    // });
+    // const products = await Promise.all(
+    //   uniqueProductNames.map(async (productName) => {
+    //     return Product.findOne({
+    //       category: id,
+    //       productName,
+    //       isSold: false,
+    //       isDeleted: false,
+    //       isHidden: false,
+    //     });
+    //   }),
+    // );
+    // const result = products.filter(Boolean); // remove any null values
+    // return result;
 });
 /**
  * Get a single category by ID.
@@ -78,17 +86,15 @@ const getCategoryById = (id) => __awaiter(void 0, void 0, void 0, function* () {
 /**
  * Update a category by ID.
  */
-const updateCategory = (id, file, data) => __awaiter(void 0, void 0, void 0, function* () {
+const updateCategory = (id, data, file) => __awaiter(void 0, void 0, void 0, function* () {
     const previous = yield category_model_1.Category.findById(id);
     if (!previous)
         throw new Error('Category not found');
-    // console.log(previous);
-    if (file.path && previous.imageUrl) {
-        const uploadedImage = yield fileUploadHelpers_1.FileUploadHelper.uploadToCloudinary(file);
-        if (uploadedImage) {
-            data.imageUrl = uploadedImage.secure_url;
-        }
-        yield fileUploadHelpers_1.FileUploadHelper.deleteFromCloudinary(previous === null || previous === void 0 ? void 0 : previous.imageUrl);
+    console.log(previous.imageUrl);
+    // console.log(file?.path);
+    if ((file === null || file === void 0 ? void 0 : file.path) && (previous === null || previous === void 0 ? void 0 : previous.imageUrl)) {
+        data.imageUrl = file.path.replace('public\\', '');
+        (0, promises_1.unlink)(`public/${previous.imageUrl}`);
     }
     const category = yield category_model_1.Category.findByIdAndUpdate(id, data, {
         new: true,
@@ -106,9 +112,6 @@ const deleteCategoryFromDB = (id) => __awaiter(void 0, void 0, void 0, function*
     const previous = yield category_model_1.Category.findById(id);
     if (!previous)
         throw new AppError_1.default(http_status_1.default.NOT_FOUND, 'Category not found');
-    if (previous.imageUrl) {
-        yield fileUploadHelpers_1.FileUploadHelper.deleteFromCloudinary(previous === null || previous === void 0 ? void 0 : previous.imageUrl);
-    }
     const category = yield category_model_1.Category.findByIdAndDelete(id, { new: true });
     return category;
 });

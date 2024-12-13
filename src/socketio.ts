@@ -18,7 +18,7 @@ const initializeSocketIO = (server: HttpServer) => {
   // Online users
   const onlineUser = new Set();
 
-  io.on('connection', async socket => {
+  io.on('connection', async (socket) => {
     console.log('connected', socket?.id);
 
     try {

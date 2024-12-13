@@ -5,16 +5,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.productValidations = void 0;
 const zod_1 = require("zod");
 // Validation schema for creating a product
-const createProductValidationSchema = zod_1.z.object({
-    productName: zod_1.z.string().min(1, 'Product name is required'),
-    description: zod_1.z.string().min(1, 'Description is required'),
-    price: zod_1.z.number().positive('Price must be greater than 0'),
-    category: zod_1.z.string().min(1, 'Category ID is required'),
-    noOfProducts: zod_1.z
-        .number()
-        .int()
-        .min(1, 'Number of products must be at least 1'),
-});
+// const createProductValidationSchema = z.object({
+//   productName: z.string().min(1, 'Product name is required'),
+//   description: z.string().min(1, 'Description is required'),
+//   price: z.number().positive('Price must be greater than 0'),
+//   category: z.string().min(1, 'Category ID is required'),
+//   noOfProducts: z
+//     .number()
+//     .int()
+//     .min(1, 'Number of products must be at least 1'),
+// });
 // Validation schema for updating a product
 const updateProductValidationSchema = zod_1.z.object({
     body: zod_1.z.object({
@@ -30,6 +30,6 @@ const updateProductValidationSchema = zod_1.z.object({
     }),
 });
 exports.productValidations = {
-    createProductValidationSchema,
+    // createProductValidationSchema,
     updateProductValidationSchema,
 };

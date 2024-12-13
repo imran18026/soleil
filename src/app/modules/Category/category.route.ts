@@ -23,9 +23,9 @@ router.post(
   CategoryController.addNewCategory,
 );
 
-router.get('/', CategoryController.getCategories);
+router.get('/', CategoryController.getAllCategories);
 
-router.get('/products/:id',CategoryController.getProductsbyCategory)
+router.get('/products/:id', CategoryController.getProductsbyCategory);
 
 router.get('/:id', CategoryController.getCategoryById);
 

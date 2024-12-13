@@ -4,19 +4,12 @@
 import { Model, Types } from 'mongoose';
 
 export type TProduct = {
-  productName: string;
-  productId: string; // Sequential ID based on category
-  description: string;
-  price: number;
-  category: Types.ObjectId; // Reference to Category
-  qrCodeUrl: string; // URL for QR code
-  imageUlrs: string[]; // Cloudinary URLs for product images
-  isHidden: boolean;
-  isDeleted: boolean; // Soft delete flag
+  productInfoId: Types.ObjectId; // Reference to Category
+  uniqueId: string;
   addId: string;
   isSold: boolean;
-  createdAt: Date;
-  updatedAt: Date;
+  // createdAt: Date;
+  // updatedAt: Date;
 };
 
 export type ProductModel = Model<TProduct>;

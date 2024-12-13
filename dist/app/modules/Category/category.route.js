@@ -19,7 +19,7 @@ fileUploadHelpers_1.FileUploadHelper.upload.single('file'), // Single image uplo
     req.body = category_validation_1.categoryValidations.createCategoryValidationSchema.parse(JSON.parse(req.body.data));
     return category_controller_1.CategoryController.addNewCategory(req, res, next);
 }, (0, validateRequest_1.default)(category_validation_1.categoryValidations.createCategoryValidationSchema), category_controller_1.CategoryController.addNewCategory);
-router.get('/', category_controller_1.CategoryController.getCategories);
+router.get('/', category_controller_1.CategoryController.getAllCategories);
 router.get('/products/:id', category_controller_1.CategoryController.getProductsbyCategory);
 router.get('/:id', category_controller_1.CategoryController.getCategoryById);
 router.patch('/:id', 

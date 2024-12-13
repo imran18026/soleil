@@ -4,16 +4,16 @@
 import { z } from 'zod';
 
 // Validation schema for creating a product
-const createProductValidationSchema = z.object({
-  productName: z.string().min(1, 'Product name is required'),
-  description: z.string().min(1, 'Description is required'),
-  price: z.number().positive('Price must be greater than 0'),
-  category: z.string().min(1, 'Category ID is required'),
-  noOfProducts: z
-    .number()
-    .int()
-    .min(1, 'Number of products must be at least 1'),
-});
+// const createProductValidationSchema = z.object({
+//   productName: z.string().min(1, 'Product name is required'),
+//   description: z.string().min(1, 'Description is required'),
+//   price: z.number().positive('Price must be greater than 0'),
+//   category: z.string().min(1, 'Category ID is required'),
+//   noOfProducts: z
+//     .number()
+//     .int()
+//     .min(1, 'Number of products must be at least 1'),
+// });
 
 // Validation schema for updating a product
 const updateProductValidationSchema = z.object({
@@ -31,6 +31,6 @@ const updateProductValidationSchema = z.object({
 });
 
 export const productValidations = {
-  createProductValidationSchema,
+  // createProductValidationSchema,
   updateProductValidationSchema,
 };

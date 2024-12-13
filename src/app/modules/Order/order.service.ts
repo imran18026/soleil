@@ -1,198 +1,179 @@
 // File: order.service.ts
 // Description: Service logic for the Order module
 
-import mongoose, { Types } from 'mongoose';
+import mongoose from 'mongoose';
 import { Product } from '../Product/product.model';
-
+import { User } from '../user/user.models';
 import { TOrder } from './order.interface';
 import { Order } from './order.model';
-import { User } from '../user/user.models';
-import { Payment } from '../payment/payment.model';
-import { Category } from '../Category/category.model';
+import QueryBuilder from '../../builder/QueryBuilder';
+import AppError from '../../error/AppError';
+import httpStatus from 'http-status';
+import { ProductInfo } from '../ProductInfo/ProductInfo.model';
+import { orderSearchableFields } from './order.constant';
 
 /**
- * Checks product availability and user existence.
+ * Creates a new order with transaction and rollback support.
  */
-
-type preOrderCheckerResponse = {
-  productName?: string;
-  isValid: boolean;
-};
-const isAllAvailable = async (
-  userId: string,
-  productId: string,
-  quantity: number,
-): Promise<preOrderCheckerResponse> => {
-  const user = await User.findOne({ _id: userId, isDeleted: false });
-  if (!user) {
-    throw new Error('User does not exist');
-  }
-
-  const productName = await Product.findOne({
-    _id: productId,
-  });
-
-  if (!productName) {
-    throw new Error('Product does not exist');
-  }
-
-  const product = await Product.find({
-    productName: productName?.productName,
-    isHidden: false,
-    isSold: false,
-    isDeleted: false,
-  });
-
-  if (product.length < quantity) {
-    throw new Error(` Only ${product.length} Products is available`);
-  }
-  if (product.length >= quantity) {
-    return { productName: productName?.productName, isValid: true };
-  }
-  return { isValid: false };
-};
-
-const preOrderChecker = async (
-  userId: string,
-  productId: string,
-  quantity: number,
-): Promise<preOrderCheckerResponse> => {
-  const data = await isAllAvailable(userId, productId, quantity);
-  return data;
-};
-
-/**
- * Creates a new order with transaction and rollback.
- */
-const createOrder = async (
-  data: Partial<TOrder> & { productName?: string },
-): Promise<TOrder | any> => {
-  if (data.paymentId) {
-    const payment = await Payment.findOne({
-      _id: data.paymentId,
-      isAlreadyUsed: false,
-    });
-    if (!payment || payment.status !== 'pending') {
-      throw new Error('Payment is invalid');
-    }
-  }
-
+const createOrder = async (data: Partial<TOrder>): Promise<TOrder> => {
   const user = await User.findById(data.userId);
   if (!user) {
-    throw new Error('User not found');
+    throw new AppError(httpStatus.NOT_FOUND, 'User not found');
   }
 
-  const quantity = data?.quantity || 1;
+  if (!data.quantity) {
+    throw new AppError(httpStatus.BAD_REQUEST, 'Quantity is required');
+  }
 
-  const productIds = await Product.find({
-    productName: data?.productName,
+  const productInfo = await ProductInfo.findById(data.productInfoId);
+  if (!productInfo) {
+    throw new AppError(httpStatus.BAD_REQUEST, 'Product info not found');
+  }
+
+  const availableProducts = await Product.find({
+    productInfoId: data.productInfoId,
     isSold: false,
-    isHidden: false,
-  })
-    .select('_id')
-    .limit(quantity);
+  });
 
-  const productIdArray = productIds.map((item) => item._id.toString());
-  if (productIdArray.length === 0) {
-    throw new Error('Product not found');
+  if (availableProducts.length < data.quantity) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      `Only ${availableProducts.length} products are available`,
+    );
   }
-
-  delete data.productName;
-  data.productIds = [...productIdArray];
-  data.ispaymentDone = true;
 
   const session = await mongoose.startSession();
+  const productIdArray: string[] = [];
 
   try {
     session.startTransaction();
 
-    productIdArray.map(async (id) => {
-      await Product.findByIdAndUpdate(id, {
-        isSold: true,
-      }),
-        { new: true, session };
-    });
+    for (let i = 0; i < data.quantity; i++) {
+      const product = await Product.findOneAndUpdate(
+        { productInfoId: data.productInfoId, isSold: false },
+        { isSold: true },
+        { new: true, session },
+      );
+      if (product) {
+        productIdArray.push(product._id.toString());
+      }
+    }
 
-    const user = await User.findByIdAndUpdate(
+    data.productIds = productIdArray;
+
+    await User.findByIdAndUpdate(
       data.userId,
-      {
-        $inc: { orderdProducts: quantity },
-      },
-      { new: true, session },
+      { $inc: { orderdProducts: data.quantity } },
+      { session },
     );
 
-    const categoryId = await Product.findOne({ _id: productIds[0] }).select(
-      'category',
-    );
-
-    const value = await Category.findByIdAndUpdate(
-      categoryId?.category,
-      {
-        $inc: { available: -Number(quantity), attributed: Number(quantity) },
-      },
-      { new: true, session },
-    );
-    console.log(value);
-
-    await Payment.findByIdAndUpdate(
-      data.paymentId,
-      { isAlreadyUsed: true, status: 'success' },
-      { new: true, session },
+    await ProductInfo.findByIdAndUpdate(
+      data.productInfoId,
+      { $inc: { attributed: data.quantity } },
+      { session },
     );
 
     const order = await Order.create([data], { session });
-
     await session.commitTransaction();
     return order[0];
   } catch (error) {
     await session.abortTransaction();
     throw error;
   } finally {
-    await session.endSession();
+    session.endSession();
   }
 };
 
+/**
+ * Fetches all orders with query support for filtering, sorting, and pagination.
+ */
 const getAllOrders = async (query: Record<string, unknown>) => {
-  const orders = await Order.find(query).populate('user product');
-  return orders;
+  const ordersQuery = new QueryBuilder(
+    Order.find().populate('productInfoId'),
+    query,
+  )
+    .search(orderSearchableFields) // Define searchable fields
+    .filter(['status', 'orderPaymentStatus', 'userId']) // Define filterable fields
+    .sort()
+    .paginate()
+    .fields();
+
+  const meta = await ordersQuery.countTotal();
+  const result = await ordersQuery.modelQuery;
+  return { meta, result };
 };
 
-const myOrders = async (id: string): Promise<TOrder[]> => {
-  const orders = await Order.find({ user: id });
-  return orders;
+/**
+ * Fetches orders for a specific user.
+ */
+const myOrders = async (userId: string): Promise<TOrder[]> => {
+  return await Order.find({ userId }).populate('productInfoId');
 };
 
-const getOrderById = async (id: string): Promise<TOrder | null> => {
-  const order = await Order.findById(id).populate('user product');
-  return order;
+/**
+ * Fetches a single order by ID.
+ */
+const getOrderById = async (orderId: string): Promise<TOrder | null> => {
+  return await Order.findById(orderId).populate('productInfoId');
 };
 
-const updateOrder = async (
-  id: string,
-  payload: Partial<TOrder>,
+/**
+ * Updates the status of an order.
+ */
+const updateOrderStatus = async (
+  orderId: string,
+  status: { status: 'New order' | 'In the process' | 'Order delivered' },
 ): Promise<TOrder | null> => {
-  const updatedOrder = await Order.findByIdAndUpdate(id, payload, {
+  return await Order.findByIdAndUpdate(orderId, status, {
     new: true,
     runValidators: true,
   });
-  return updatedOrder;
 };
 
-const deleteOrder = async (id: string): Promise<TOrder | null> => {
-  const deletedOrder = await Order.findByIdAndUpdate(
-    id,
+/**
+ * Updates the payment status of an order.
+ */
+const updatePaymentStatusSuccess = async (
+  orderId: string,
+  paymentData: Partial<TOrder>,
+): Promise<TOrder | null> => {
+  return await Order.findByIdAndUpdate(orderId, paymentData, {
+    new: true,
+    runValidators: true,
+  });
+};
+
+/**
+ * Updates an order.
+ */
+const updateOrder = async (
+  orderId: string,
+  updateData: Partial<TOrder>,
+): Promise<TOrder | null> => {
+  return await Order.findByIdAndUpdate(orderId, updateData, {
+    new: true,
+    runValidators: true,
+  });
+};
+
+/**
+ * Soft deletes an order by marking it as deleted.
+ */
+const deleteOrder = async (orderId: string): Promise<TOrder | null> => {
+  return await Order.findByIdAndUpdate(
+    orderId,
     { isDeleted: true },
     { new: true },
   );
-  return deletedOrder;
 };
 
 export const OrderService = {
   createOrder,
   getAllOrders,
-  preOrderChecker,
   myOrders,
   getOrderById,
   updateOrder,
   deleteOrder,
+  updateOrderStatus,
+  updatePaymentStatusSuccess,
 };

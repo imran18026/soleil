@@ -3,41 +3,66 @@
 
 import express from 'express';
 import { OrderController } from './order.controller';
-import { orderValidations } from './order.validation';
-import auth from '../../middleware/auth';
 import validateRequest from '../../middleware/validateRequest';
+import auth from '../../middleware/auth'; // Uncomment and configure for authentication
 import { USER_ROLE } from '../user/user.constants';
+import { orderValidations } from './order.validation';
 
 const router = express.Router();
 
-router.get(
-  '/pre-orders',
-  // auth(USER_ROLE.ADMIN, USER_ROLE.CUSTOMER),
-  OrderController.preOrderChecker,
-);
+/**
+ * Routes for Order operations
+ */
 router.post(
   '/create-order',
-  // auth(USER_ROLE.CUSTOMER),
-  // validateRequest(orderValidations.createOrderValidationSchema),
+  // auth(USER_ROLE.CUSTOMER), // Add authorization middleware
+  validateRequest(orderValidations.createOrderValidationSchema),
   OrderController.createOrder,
 );
 
-router.get('/', auth(USER_ROLE.ADMIN), OrderController.getAllOrders);
+router.get(
+  '/',
+  // auth(USER_ROLE.ADMIN), // Restrict to admin if needed
+  OrderController.getAllOrders,
+);
 
 router.get(
   '/my-orders/:id',
-  auth(USER_ROLE.ADMIN, USER_ROLE.CUSTOMER),
+  // auth(USER_ROLE.CUSTOMER),
   OrderController.myOrders,
 );
 
 router.get(
   '/:id',
-  auth(USER_ROLE.ADMIN, USER_ROLE.CUSTOMER),
+  // auth(USER_ROLE.ADMIN, USER_ROLE.CUSTOMER),
   OrderController.getOrderById,
 );
 
-router.patch('/:id', auth(USER_ROLE.ADMIN), OrderController.updateOrder);
+router.patch(
+  '/status/:id',
+  // auth(USER_ROLE.ADMIN),
+  validateRequest(orderValidations.updateOrderStatusValidationSchema),
+  OrderController.updateOrderStatus,
+);
 
-router.delete('/:id', auth(USER_ROLE.ADMIN), OrderController.deleteOrder);
+router.patch(
+  '/payment-status/:id',
+  // auth(USER_ROLE.ADMIN),
+  validateRequest(orderValidations.updatePaymentStatusValidationSchema),
+  OrderController.updatePaymentStatusSuccess,
+);
+
+router.patch(
+  '/:id',
+  // auth(USER_ROLE.ADMIN),
+  validateRequest(orderValidations.updateOrderValidationSchema),
+  OrderController.updateOrder,
+);
+
+router.delete(
+  '/:id',
+  // auth(USER_ROLE.ADMIN),
+  OrderController.deleteOrder,
+);
 
 export const OrderRoutes = router;

@@ -1,4 +1,4 @@
-     import { z } from 'zod';
+import { z } from 'zod';
 
 const createSubscriptionPlanSchema = z.object({
   body: z.object({
@@ -24,7 +24,8 @@ const updateSubscriptionPlanSchema = z.object({
       .number()
       .min(2)
       .optional()
-      .refine((val) => Number.isInteger(val), 'Duration must be an integer'),
+      .refine((val) => Number.isInteger(val), 'Duration must be an integer')
+      .optional(),
     features: z.array(z.string()).optional(),
   }),
 });

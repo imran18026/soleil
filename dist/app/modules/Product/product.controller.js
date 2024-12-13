@@ -17,27 +17,35 @@ const http_status_1 = __importDefault(require("http-status"));
 const product_service_1 = require("./product.service");
 const catchAsync_1 = __importDefault(require("../../utils/catchAsync"));
 const sendResponse_1 = __importDefault(require("../../utils/sendResponse"));
-const AppError_1 = __importDefault(require("../../error/AppError"));
 /**
  * Create a new product.
  */
-const addNewProduct = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const productData = req.body;
-    const files = req.files;
-    if (!files || !files.length) {
-        throw new AppError_1.default(http_status_1.default.BAD_REQUEST, 'Images are required');
-    }
-    const result = yield product_service_1.ProductService.addNewProduct(files, productData);
-    (0, sendResponse_1.default)(res, {
-        statusCode: http_status_1.default.CREATED,
-        success: true,
-        message: 'New product(s) added successfully!',
-        data: result,
-    });
-}));
+// const addNewProduct = catchAsync(async (req: Request, res: Response) => {
+//   const productData = req.body;
+//   const files = req.files as Express.Multer.File[];
+//   if (!files || !files.length) {
+//     throw new AppError(httpStatus.BAD_REQUEST, 'Images are required');
+//   }
+//   const result = await ProductService.addNewProduct(files, productData);
+//   sendResponse(res, {
+//     statusCode: httpStatus.CREATED,
+//     success: true,
+//     message: 'New product(s) added successfully!',
+//     data: result,
+//   });
+// });
 /**
  * Get all products.
  */
+const getAllProductUniquely = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const products = yield product_service_1.ProductService.getAllProductUniquely();
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: 'Products retrieved successfully!',
+        data: products,
+    });
+}));
 const getProducts = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const products = yield product_service_1.ProductService.getAllProducts(req.query);
     (0, sendResponse_1.default)(res, {
@@ -107,10 +115,11 @@ const deleteProduct = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, 
     });
 }));
 exports.ProductController = {
-    addNewProduct,
+    // addNewProduct,
     getProducts,
     getAvailableProducts,
     getProductById,
     updateProduct,
     deleteProduct,
+    getAllProductUniquely,
 };

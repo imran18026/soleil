@@ -12,6 +12,8 @@ import { FileUploadHelper } from '../../helpers/fileUploadHelpers';
 import AppError from '../../error/AppError';
 import httpStatus from 'http-status';
 import { Product } from '../Product/product.model';
+import { ProductInfo } from '../ProductInfo/ProductInfo.model';
+import { deleteFile } from '../../utils/fileHelper';
 
 const addNewCategory = async (
   file: Express.Multer.File,
@@ -21,14 +23,11 @@ const addNewCategory = async (
     $or: [{ addID: data?.addId }, { categoryName: data?.categoryName }],
   });
 
-  if (isCategoryExist && file.path) {
-    await unlink(file.path);
-    throw new Error('Category is already exists');
-  }
+  const ImageUrl = file.path.replace('public\\', '');
+  data.imageUrl = ImageUrl;
 
-  const uploadedImage = await FileUploadHelper.uploadToCloudinary(file);
-  if (uploadedImage) {
-    data.imageUrl = uploadedImage.secure_url;
+  if (isCategoryExist) {
+    throw new AppError(httpStatus.CONFLICT, 'Category already exists');
   }
 
   const result = await Category.create(data);
@@ -52,24 +51,35 @@ const getAllCategories = async (query: Record<string, unknown>) => {
 };
 
 const getProductsbyCategory = async (id: string) => {
-  const uniqueProductNames = await Product.distinct('productName', {
-    category: id,
-  });
-  const products = await Promise.all(
-    uniqueProductNames.map(async (productName) => {
-      return Product.findOne({
-        category: id,
-        productName,
-        isSold: false,
-        isDeleted: false,
-        isHidden: false,
-      });
-    }),
-  );
+  const productInfo = await ProductInfo.find({ categoryId: id });
+  const productArray = [];
+  for (let i = 0; i < productInfo.length; i++) {
+    const product = await Product.find({
+      productInfoId: productInfo[i]._id,
+    }).populate('productInfoId');
+    productArray.push(...product);
+  }
 
-  const result = products.filter(Boolean); // remove any null values
+  return productArray;
 
-  return result;
+  // const uniqueProductNames = await Product.distinct('productName', {
+  //   category: id,
+  // });
+  // const products = await Promise.all(
+  //   uniqueProductNames.map(async (productName) => {
+  //     return Product.findOne({
+  //       category: id,
+  //       productName,
+  //       isSold: false,
+  //       isDeleted: false,
+  //       isHidden: false,
+  //     });
+  //   }),
+  // );
+
+  // const result = products.filter(Boolean); // remove any null values
+
+  // return result;
 };
 
 /**
@@ -85,18 +95,17 @@ const getCategoryById = async (id: string): Promise<TCategory | null> => {
  */
 const updateCategory = async (
   id: string,
-  file: Express.Multer.File,
   data: Partial<TCategory>,
+  file?: Express.Multer.File,
 ): Promise<TCategory | null> => {
   const previous = await Category.findById(id);
   if (!previous) throw new Error('Category not found');
-  // console.log(previous);
-  if (file.path && previous.imageUrl) {
-    const uploadedImage = await FileUploadHelper.uploadToCloudinary(file);
-    if (uploadedImage) {
-      data.imageUrl = uploadedImage.secure_url;
-    }
-    await FileUploadHelper.deleteFromCloudinary(previous?.imageUrl);
+  console.log(previous.imageUrl);
+  // console.log(file?.path);
+
+  if (file?.path && previous?.imageUrl) {
+    data.imageUrl = file.path.replace('public\\', '');
+    unlink(`public/${previous.imageUrl}`);
   }
 
   const category = await Category.findByIdAndUpdate(id, data, {
@@ -122,9 +131,6 @@ const deleteCategoryFromDB = async (id: string): Promise<TCategory | null> => {
 
   if (!previous) throw new AppError(httpStatus.NOT_FOUND, 'Category not found');
 
-  if (previous.imageUrl) {
-    await FileUploadHelper.deleteFromCloudinary(previous?.imageUrl);
-  }
   const category = await Category.findByIdAndDelete(id, { new: true });
   return category;
 };

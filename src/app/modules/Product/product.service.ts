@@ -10,97 +10,126 @@ import { Product } from './product.model';
 /**
  * Add new product(s) with sequential product IDs.
  */
-const addNewProduct = async (
-  files: Express.Multer.File[],
-  productData: Partial<TProduct> & { noOfProducts?: number },
-): Promise<TProduct[] | any> => {
-  const total = productData.noOfProducts || 1;
-  delete productData.noOfProducts;
+// const addNewProduct = async (
+//   files: Express.Multer.File[],
+//   productData: Partial<TProduct> & { noOfProducts?: number },
+// ): Promise<TProduct[] | any> => {
+//   const total = productData.noOfProducts || 1;
+//   delete productData.noOfProducts;
 
-  const isCategoryExist = await Category.findById(productData.category);
-  if (!isCategoryExist) {
-    throw new AppError(httpStatus.NOT_FOUND, 'Category not found');
-  }
+//   const isCategoryExist = await Category.findById(productData.category);
+//   if (!isCategoryExist) {
+//     throw new AppError(httpStatus.NOT_FOUND, 'Category not found');
+//   }
 
-  const session = await mongoose.startSession();
-  session.startTransaction();
-  try {
-    // Upload images to Cloudinary
-    if (!files)
-      throw new AppError(httpStatus.BAD_REQUEST, 'Images are required');
-    const uploadedImages =
-      await FileUploadHelper.uploadMultipleToCloudinary(files);
+//   const session = await mongoose.startSession();
+//   session.startTransaction();
+//   try {
+//     // Upload images to Cloudinary
+//     if (!files)
+//       throw new AppError(httpStatus.BAD_REQUEST, 'Images are required');
+//     const uploadedImages =
+//       await FileUploadHelper.uploadMultipleToCloudinary(files);
 
-    const ProductsArray: TProduct[] = [];
+//     const ProductsArray: TProduct[] = [];
 
-    const lastProduct = await Product.find({
-      category: productData.category,
-      addId: isCategoryExist.addId,
-    });
+//     const lastProduct = await Product.find({
+//       category: productData.category,
+//       addId: isCategoryExist.addId,
+//     });
 
-    let lastNumber = lastProduct?.length || 0;
-    // if (
-    //   lastProduct &&
-    //   lastProduct?.productId.startsWith(isCategoryExist.addId)
-    // ) {
-    //   lastNumber = parseInt(
-    //     lastProduct.productId.replace(isCategoryExist.addId, ''),
-    //     10,
-    //   );
-    // }
+//     let lastNumber = lastProduct?.length || 0;
+//     // if (
+//     //   lastProduct &&
+//     //   lastProduct?.productId.startsWith(isCategoryExist.addId)
+//     // ) {
+//     //   lastNumber = parseInt(
+//     //     lastProduct.productId.replace(isCategoryExist.addId, ''),
+//     //     10,
+//     //   );
+//     // }
 
-    if (total && typeof total === 'number')
-      for (let i = 0; i < total; i++) {
-        const productNumber = lastNumber + 1 + i;
-        const productId = `${isCategoryExist.addId}${productNumber
-          .toString()
-          .padStart(5, '0')}`;
+//     if (total && typeof total === 'number')
+//       for (let i = 0; i < total; i++) {
+//         const productNumber = lastNumber + 1 + i;
+//         const productId = `${isCategoryExist.addId}${productNumber
+//           .toString()
+//           .padStart(5, '0')}`;
 
-        const singleProduct: TProduct = { ...productData } as TProduct;
-        singleProduct.productId = productId;
-        singleProduct.qrCodeUrl = `http://localhost:5000/api/v1/qrcode/${productId}`;
-        singleProduct.imageUlrs = uploadedImages;
-        singleProduct.addId = isCategoryExist.addId;
+//         const singleProduct: TProduct = { ...productData } as TProduct;
+//         singleProduct.productId = productId;
+//         singleProduct.qrCodeUrl = `http://localhost:5000/api/v1/qrcode/${productId}`;
+//         singleProduct.imageUlrs = uploadedImages;
+//         singleProduct.addId = isCategoryExist.addId;
 
-        ProductsArray.push(singleProduct);
-      }
+//         ProductsArray.push(singleProduct);
+//       }
 
-    interface Idata {
-      insertOne: {
-        document: TProduct;
-      };
-    }
+//     interface Idata {
+//       insertOne: {
+//         document: TProduct;
+//       };
+//     }
 
-    await Category.findByIdAndUpdate(isCategoryExist._id, {
-      $inc: { quantity: total, available: total },
-    });
+//     await Category.findByIdAndUpdate(isCategoryExist._id, {
+//       $inc: { quantity: total, available: total },
+//     });
 
-    const bulkOps: Idata[] = ProductsArray.map((product) => ({
-      insertOne: { document: product },
-    }));
+//     const bulkOps: Idata[] = ProductsArray.map((product) => ({
+//       insertOne: { document: product },
+//     }));
 
-    const result = await Product.bulkWrite(bulkOps, { ordered: true });
+//     const result = await Product.bulkWrite(bulkOps, { ordered: true });
 
-    await session.commitTransaction();
-    await session.endSession();
-    return result;
-  } catch (error) {
-    // Rollback transaction in case of failure
-    await session.abortTransaction();
-    session.endSession();
-    throw new AppError(
-      httpStatus.INTERNAL_SERVER_ERROR,
-      `Failed to create products, ${error}`,
-    );
-  }
-  // return [];
-};
+//     await session.commitTransaction();
+//     await session.endSession();
+//     return result;
+//   } catch (error) {
+//     // Rollback transaction in case of failure
+//     await session.abortTransaction();
+//     session.endSession();
+//     throw new AppError(
+//       httpStatus.INTERNAL_SERVER_ERROR,
+//       `Failed to create products, ${error}`,
+//     );
+//   }
+//   // return [];
+// };
 
 /**
  * Get all products with filtering, sorting, and pagination.
  */
+
+const getAllProductUniquely = async () => {
+  const productQuery = await Product.aggregate([
+    {
+      $group: {
+        _id: '$productName', // Group by productName
+        productCount: { $sum: 1 }, // Count the number of products with the same name
+        firstProduct: { $first: '$$ROOT' }, // Get the first product in the group
+      },
+    },
+    {
+      $project: {
+        _id: 0, // Exclude the _id field
+        productName: '$_id', // Rename _id to productName
+        productCount: 1, // Include the count of products in the group
+        firstProduct: 1, // Include the first product details in the group
+      },
+    },
+    {
+      $sort: { productCount: -1 }, // Optional: Sort by count in descending order
+    },
+  ]);
+  console.log(productQuery);
+
+  return productQuery;
+};
 const getAllProducts = async (query: Record<string, unknown>) => {
-  const productQuery = new QueryBuilder(Product.find(), query)
+  const productQuery = new QueryBuilder(
+    Product.find().populate('productInfoId'),
+    query,
+  )
     .search(['name', 'description']) // Searchable fields
     .filter(['category', 'isAvailable']) // Filterable fields
     .sort()
@@ -109,7 +138,6 @@ const getAllProducts = async (query: Record<string, unknown>) => {
 
   const meta = await productQuery.countTotal();
   const result = await productQuery.modelQuery;
-
   return { meta, result };
 };
 
@@ -125,7 +153,7 @@ const getAvailableProducts = async () => {
  * Get a single product by ID.
  */
 const getProductById = async (id: string): Promise<TProduct | null> => {
-  const product = await Product.findById(id);
+  const product = await Product.findById(id).populate('productInfoId');
   return product;
 };
 
@@ -156,10 +184,11 @@ const deleteProduct = async (id: string): Promise<TProduct | null> => {
 };
 
 export const ProductService = {
-  addNewProduct,
+  // addNewProduct,
   getAllProducts,
   getAvailableProducts,
   getProductById,
   updateProduct,
   deleteProduct,
+  getAllProductUniquely,
 };

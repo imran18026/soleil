@@ -8,6 +8,7 @@ import express, { Application, Request, Response } from 'express';
 import globalErrorHandler from './app/middleware/globalErrorhandler';
 import notFound from './app/middleware/notfound';
 import router from './app/routes';
+import { QrManageRoutes } from './app/modules/qrManage/qrManage.route';
 const app: Application = express();
 app.use(express.static('public'));
 app.use(express.urlencoded({ extended: true }));
@@ -28,10 +29,11 @@ app.use(
 // app.use(app.static('public'));
 
 // application routes
+app.use('/qr', QrManageRoutes);
 app.use('/api/v1', router);
 
 app.get('/', (req: Request, res: Response) => {
-  res.send('server is running');
+  res.send('Soleil server is running');
 });
 app.use(globalErrorHandler);
 

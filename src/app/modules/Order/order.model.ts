@@ -1,5 +1,5 @@
 // File: order.model.ts
-// Updated schema for Order module
+// Description: Mongoose schema and model for Order module
 
 import { Schema, model } from 'mongoose';
 import { OrderModel, TOrder } from './order.interface';
@@ -11,19 +11,41 @@ const orderSchema = new Schema<TOrder, OrderModel>(
       ref: 'User',
       required: true,
     },
-    productIds: {
-      type: [String],
-      required: true,
-    },
+    productIds: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Product',
+        required: true,
+      },
+    ],
     paymentId: {
       type: Schema.Types.ObjectId,
-      ref: 'Payment', // Reference to the Payment collection
+      ref: 'Payment',
       default: null,
+    },
+    orderPaymentStatus: {
+      type: String,
+      enum: ['pending', 'success', 'failed'],
+      default: 'pending',
     },
     quantity: {
       type: Number,
       required: true,
       min: 1,
+    },
+    productInfoId: {
+      type: Schema.Types.ObjectId,
+      ref: 'ProductInfo',
+      required: true,
+    },
+    deliveryCost: {
+      type: Number,
+      required: true,
+      default: 0,
+    },
+    date: {
+      type: Date,
+      default: Date.now,
     },
     totalAmount: {
       type: Number,

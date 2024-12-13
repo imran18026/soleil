@@ -5,30 +5,43 @@ import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
 import AppError from '../../error/AppError';
 
-
 /**
  * Create a new product.
  */
-const addNewProduct = catchAsync(async (req: Request, res: Response) => {
-  const productData = req.body;
-  const files = req.files as Express.Multer.File[];
+// const addNewProduct = catchAsync(async (req: Request, res: Response) => {
+//   const productData = req.body;
+//   const files = req.files as Express.Multer.File[];
 
-  if (!files || !files.length) {
-    throw new AppError(httpStatus.BAD_REQUEST, 'Images are required');
-  }
+//   if (!files || !files.length) {
+//     throw new AppError(httpStatus.BAD_REQUEST, 'Images are required');
+//   }
 
-  const result = await ProductService.addNewProduct(files, productData);
+//   const result = await ProductService.addNewProduct(files, productData);
 
-  sendResponse(res, {
-    statusCode: httpStatus.CREATED,
-    success: true,
-    message: 'New product(s) added successfully!',
-    data: result,
-  });
-});
+//   sendResponse(res, {
+//     statusCode: httpStatus.CREATED,
+//     success: true,
+//     message: 'New product(s) added successfully!',
+//     data: result,
+//   });
+// });
 /**
  * Get all products.
  */
+
+const getAllProductUniquely = catchAsync(
+  async (req: Request, res: Response) => {
+    const products = await ProductService.getAllProductUniquely();
+
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Products retrieved successfully!',
+      data: products,
+    });
+  },
+);
+
 const getProducts = catchAsync(async (req: Request, res: Response) => {
   const products = await ProductService.getAllProducts(req.query);
 
@@ -107,10 +120,11 @@ const deleteProduct = catchAsync(async (req: Request, res: Response) => {
 });
 
 export const ProductController = {
-  addNewProduct,
+  // addNewProduct,
   getProducts,
   getAvailableProducts,
   getProductById,
   updateProduct,
   deleteProduct,
+  getAllProductUniquely,
 };

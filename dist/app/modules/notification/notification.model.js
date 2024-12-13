@@ -14,7 +14,7 @@ const NotificationSchema = new mongoose_1.Schema({
     },
     role: {
         type: String,
-        enum: ['mentee', 'mentor', 'admin'],
+        enum: ['admin', 'coustomer'],
         required: false,
     },
     type: {

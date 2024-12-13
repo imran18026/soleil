@@ -24,6 +24,10 @@ const userSchema = new Schema<TUser>(
       enum: Role,
       default: USER_ROLE.CUSTOMER,
     },
+    isSubscribed: {
+      type: Boolean,
+      default: false,
+    },
     password: {
       type: String,
       required: true,

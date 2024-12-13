@@ -17,8 +17,6 @@ const addNewCategory = catchAsync(async (req: Request, res: Response) => {
   const categoryData: Partial<TCategory> = req.body;
   const { file } = req;
 
-  console.log(file, categoryData);
-
   if (!file) throw new AppError(httpStatus.BAD_REQUEST, 'Image is required');
 
   const result = await CategoryService.addNewCategory(file, categoryData);
@@ -34,7 +32,7 @@ const addNewCategory = catchAsync(async (req: Request, res: Response) => {
 /**
  * Get all categories.
  */
-const getCategories = catchAsync(async (req: Request, res: Response) => {
+const getAllCategories = catchAsync(async (req: Request, res: Response) => {
   const categories = await CategoryService.getAllCategories(req.query);
 
   sendResponse(res, {
@@ -45,6 +43,7 @@ const getCategories = catchAsync(async (req: Request, res: Response) => {
     meta: categories.meta,
   });
 });
+
 const getProductsbyCategory = catchAsync(
   async (req: Request, res: Response) => {
     const { id } = req.params;
@@ -82,8 +81,8 @@ const updateCategory = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
   const categoryData: Partial<TCategory> = req.body;
   const { file } = req;
-  if (!file) throw new AppError(httpStatus.BAD_REQUEST, 'Image is required');
-  const category = await CategoryService.updateCategory(id, file, categoryData);
+
+  const category = await CategoryService.updateCategory(id, categoryData, file);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -123,7 +122,7 @@ const deleteCategoryFromDB = catchAsync(async (req: Request, res: Response) => {
 
 export const CategoryController = {
   addNewCategory,
-  getCategories,
+  getAllCategories,
   getCategoryById,
   getProductsbyCategory,
   updateCategory,
