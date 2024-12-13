@@ -14,6 +14,7 @@ export interface TUser extends TUserCreate {
   _id: string;
   image: string;
   orderdProducts: number;
+  isSubscribed: boolean;
   location?: string;
   isActive: boolean;
   isDeleted: boolean;

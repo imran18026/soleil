@@ -36,6 +36,10 @@ const userSchema = new mongoose_1.Schema({
         enum: user_constants_1.Role,
         default: user_constants_1.USER_ROLE.CUSTOMER,
     },
+    isSubscribed: {
+        type: Boolean,
+        default: false,
+    },
     password: {
         type: String,
         required: true,

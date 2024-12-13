@@ -6,17 +6,21 @@ import { ProductModel, TProduct } from './product.interface';
 
 const productSchema = new Schema<TProduct, ProductModel>(
   {
-    productName: { type: String, required: true },
-    productId: { type: String, required: true, unique: true },
-    description: { type: String, required: true },
-    price: { type: Number, required: true },
-    category: { type: Schema.Types.ObjectId, ref: 'Category', required: true },
-    qrCodeUrl: { type: String, required: true },
-    imageUlrs: [{ type: String, required: true }],
-    addId: { type: String, required: true },
+    productInfoId: {
+      type: Schema.Types.ObjectId,
+      ref: 'ProductInfo',
+      required: true,
+    },
+    uniqueId: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    addId: {
+      type: String,
+      required: true,
+    },
     isSold: { type: Boolean, default: false },
-    isHidden: { type: Boolean, default: false },
-    isDeleted: { type: Boolean, default: false },
   },
   {
     timestamps: true,

@@ -1,2 +1,2 @@
-export const categorySearchableFields = [];
-export const categoryFilterableFields = [];
+export const categorySearchableFields = ['categoryName', 'addId'];
+export const categoryFilterableFields = ['isDeleted', 'createdAt'];

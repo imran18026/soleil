@@ -10,7 +10,7 @@ const router = express.Router();
 router.post(
   '/create-plan',
   // auth(USER_ROLE.ADMIN), // Authorization for admin
-  validateRequest(subscriptionPlanValidation.createSubscriptionPlanSchema),
+  // validateRequest(subscriptionPlanValidation.createSubscriptionPlanSchema),
   SubscriptionPlanController.createSubscriptionPlan,
 );
 
@@ -37,13 +37,13 @@ router.patch(
 );
 
 // Deactivate a subscription plan
-router.delete(
+router.patch(
   '/:id',
   // auth(USER_ROLE.ADMIN), // Authorization for admin
   SubscriptionPlanController.deactivateSubscriptionPlan,
 );
 router.delete(
-  '/DB/:id',
+  '/db/:id',
   // auth(USER_ROLE.ADMIN), // Authorization for admin
   SubscriptionPlanController.deleteSubscriptionPlanFromDB,
 );

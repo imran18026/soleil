@@ -8,20 +8,21 @@ import auth from '../../middleware/auth';
 
 const router = express.Router();
 
-router.post(
-  '/create-product',
-  // auth(USER_ROLE.admin), // Authorization middleware
-  FileUploadHelper.upload.array('files', 5), // Multiple file uploads (limit: 5)
-  (req: Request, res: Response, next: NextFunction) => {
-    req.body = productValidations.createProductValidationSchema.parse(
-      JSON.parse(req.body.data),
-    );
-    return ProductController.addNewProduct(req, res, next);
-  },
-  validateRequest(productValidations.createProductValidationSchema),
-  ProductController.addNewProduct,
-);
+// router.post(
+//   '/create-product',
+//   // auth(USER_ROLE.admin), // Authorization middleware
+//   FileUploadHelper.upload.array('files', 5), // Multiple file uploads (limit: 5)
+//   (req: Request, res: Response, next: NextFunction) => {
+//     req.body = productValidations.createProductValidationSchema.parse(
+//       JSON.parse(req.body.data),
+//     );
+//     return ProductController.addNewProduct(req, res, next);
+//   },
+//   validateRequest(productValidations.createProductValidationSchema),
+//   ProductController.addNewProduct,
+// );
 router.get('/', ProductController.getProducts);
+router.get('/unique', ProductController.getAllProductUniquely);
 
 router.get('/available', ProductController.getAvailableProducts);
 

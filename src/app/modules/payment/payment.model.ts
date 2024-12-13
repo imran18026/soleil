@@ -1,4 +1,4 @@
-import { model, Schema } from 'mongoose';
+import { Schema, model } from 'mongoose';
 import { TPayment } from './payment.interface';
 
 const paymentSchema = new Schema<TPayment>(
@@ -8,37 +8,49 @@ const paymentSchema = new Schema<TPayment>(
       ref: 'User',
       required: true,
     },
-
-    amount: {
-      type: Number,
-      required: true,
+    productOrderId: {
+      type: Schema.Types.ObjectId,
+      ref: 'Order',
+      default: null,
     },
-
+    subscriptionOrderId: {
+      type: Schema.Types.ObjectId,
+      ref: 'SubscriptionOrder',
+      default: null,
+    },
     method: {
       type: String,
-      enum: ['Wave', 'Orange_Money', 'Mtn_Money', 'Moov_Money'],
+      enum: ['card', 'Wave', 'Orange_Money', 'Mtn_Money', 'Moov_Money'],
       required: true,
     },
-
     status: {
       type: String,
       enum: ['pending', 'success', 'failed'],
       default: 'pending',
     },
-    isAlreadyUsed: {
-      type: Boolean,
-      default: false,
-    },
     transactionId: {
       type: String,
       required: true,
+    },
+    clientSecret: {
+      type: String,
+      required: true,
+    },
+    isAlreadyUsed: {
+      type: Boolean,
+      default: false,
     },
     transactionDate: {
       type: Date,
       default: Date.now,
     },
   },
-  { timestamps: true },
+  {
+    timestamps: true,
+    toJSON: {
+      virtuals: true,
+    },
+  },
 );
 
 export const Payment = model<TPayment>('Payment', paymentSchema);

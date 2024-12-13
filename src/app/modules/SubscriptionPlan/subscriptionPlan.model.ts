@@ -13,17 +13,22 @@ const subscriptionPlanSchema = new Schema<
       type: String,
       required: [true, 'Plan name is required'],
     },
-    description: {
-      type: String,
-    },
+
     price: {
       type: Number,
       required: [true, 'Plan price is required'],
       min: [0, 'Price must be a positive value'],
+      default: 0,
     },
     lockAccessToYourPage: {
       type: Boolean,
       default: false,
+    },
+    quantity: {
+      type: Number,
+      required: [true, 'Quantity is required'],
+      min: [0, 'Quantity must be a positive value'],
+      default: 0,
     },
     scanStatistics: {
       type: Boolean,
@@ -33,7 +38,11 @@ const subscriptionPlanSchema = new Schema<
       type: Boolean,
       default: false,
     },
-    duration: {
+    createOrAddVideo: {
+      type: Boolean,
+      default: true,
+    },
+    durationDays: {
       type: Number,
       required: [true, 'Duration is required'],
       min: [2, 'Minimum duration is 2 days'],
@@ -43,10 +52,7 @@ const subscriptionPlanSchema = new Schema<
       required: [true, 'Video duration is required'],
       min: [2, 'Minimum video duration is 2 minutes'],
     },
-    features: {
-      type: [String],
-      required: [true, 'At least one feature is required'],
-    },
+
     isStrickers: {
       type: Boolean,
       default: false,
@@ -58,6 +64,10 @@ const subscriptionPlanSchema = new Schema<
     isDeleted: {
       type: Boolean,
       default: false,
+    },
+    noofSubscribers: {
+      type: Number,
+      default: 0,
     },
   },
   {

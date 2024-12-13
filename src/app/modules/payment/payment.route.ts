@@ -1,36 +1,39 @@
 import express from 'express';
-import { paymentController } from './payment.controller';
-import auth from '../../middleware/auth';
-import { USER_ROLE } from '../user/user.constants';
-
-// import { auth } from "../../middlewares/auth.js";
+import { PaymentController } from './payment.controller';
+import validateRequest from '../../middleware/validateRequest';
+import { paymentValidation } from './payment.validation';
 
 const router = express.Router();
 
-router.post(
-  '/add-payment',
-  // auth(USER_ROLE.CUSTOMER),
-  paymentController.addPayment,
-);
-router.get(
-  '/',
-  // auth(USER_ROLE.ADMIN),
-  paymentController.getAllPayment,
-);
+// Get all payments
+router.get('/', PaymentController.getAllPayments);
+
+// Get a single payment by ID
 router.get(
   '/:id',
-  //  auth(USER_ROLE.ADMIN),
-  paymentController.getSinglePayment,
+  validateRequest(paymentValidation.getPaymentSchema),
+  PaymentController.getPaymentById,
 );
-router.get(
-  '/admin',
-  // auth(USER_ROLE.ADMIN),
-  paymentController.getAllPaymentByMentor,
+
+// Create a new payment
+router.post(
+  '/',
+  validateRequest(paymentValidation.createPaymentSchema),
+  PaymentController.createPayment,
 );
+
+// Update a payment by ID
+router.patch(
+  '/:id',
+  validateRequest(paymentValidation.updatePaymentSchema),
+  PaymentController.updatePayment,
+);
+
+// Delete a payment by ID
 router.delete(
   '/:id',
-  // auth(USER_ROLE.ADMIN),
-  paymentController.deleteSinglePayment,
+  validateRequest(paymentValidation.deletePaymentSchema),
+  PaymentController.deletePayment,
 );
 
 export const PaymentRouter = router;

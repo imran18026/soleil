@@ -1,67 +1,77 @@
-import AppError from '../../error/AppError';
-import { User } from '../user/user.models';
-import { TPayment } from './payment.interface';
 import { Payment } from './payment.model';
+import { TPayment } from './payment.interface';
 import QueryBuilder from '../../builder/QueryBuilder';
-import { Product } from '../Product/product.model';
+import AppError from '../../error/AppError';
 import httpStatus from 'http-status';
 
-const addPaymentService = async (data: Partial<TPayment>) => {
-  const user = await User.findById(data.userId);
-  if (!user) {
-    throw new AppError(httpStatus.NOT_FOUND, 'User not found');
+/**
+ * Get all payments with query options
+ */
+const getAllPayments = async (query: Record<string, unknown>) => {
+  const queryBuilder = new QueryBuilder(Payment.find(), query)
+    .search(['transactionId', 'method'])
+    .filter(['status', 'userId'])
+    .sort()
+    .paginate()
+    .fields();
+
+  const payments = await queryBuilder.modelQuery;
+  const meta = await queryBuilder.countTotal();
+
+  return { payments, meta };
+};
+
+/**
+ * Get a single payment by ID
+ */
+const getPaymentById = async (id: string): Promise<TPayment | null> => {
+  const payment = await Payment.findById(id);
+  if (!payment) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Payment not found');
   }
+  return payment;
+};
+
+/**
+ * Create a new payment
+ */
+const createPayment = async (data: TPayment): Promise<TPayment> => {
   const result = await Payment.create(data);
-
   return result;
 };
 
-const getAllPaymentService = async (query: Record<string, unknown>) => {
-  const PaymentQuery = new QueryBuilder(
-    Payment.find().populate('userId').populate('productId'),
-    query,
-  )
-    .search(['name'])
-    .filter([''])
-    .sort()
-    .paginate()
-    .fields();
-
-  const result = await PaymentQuery.modelQuery;
-  const meta = await PaymentQuery.countTotal();
-  return { meta, result };
+/**
+ * Update a payment by ID
+ */
+const updatePayment = async (
+  id: string,
+  data: Partial<TPayment>,
+): Promise<TPayment | null> => {
+  const payment = await Payment.findByIdAndUpdate(id, data, {
+    new: true,
+    runValidators: true,
+  });
+  if (!payment) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Payment not found');
+  }
+  return payment;
 };
 
-const getAllPaymentByMentorService = async (
-  query: Record<string, unknown>,
-  mentorId: string,
-) => {
-  const PaymentQuery = new QueryBuilder(Payment.find({ mentorId }), query)
-    .search(['name'])
-    .filter([''])
-    .sort()
-    .paginate()
-    .fields();
-
-  const result = await PaymentQuery.modelQuery;
-  const meta = await PaymentQuery.countTotal();
-  return { meta, result };
+/**
+ * Delete a payment by ID
+ */
+const deletePayment = async (id: string): Promise<TPayment | null> => {
+  const payment = await Payment.findByIdAndDelete(id);
+  if (!payment) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Payment not found');
+  }
+  return payment;
 };
 
-const singlePaymentService = async (id: string) => {
-  const task = await Payment.findById(id);
-  return task;
-};
-
-const deleteSinglePaymentService = async (id: string) => {
-  const result = await Payment.deleteOne({ _id: id });
-  return result;
-};
-
-export const paymentService = {
-  addPaymentService,
-  getAllPaymentService,
-  singlePaymentService,
-  deleteSinglePaymentService,
-  getAllPaymentByMentorService,
+export const PaymentService = {
+  getAllPayments,
+  getPaymentById,
+  createPayment,
+  updatePayment,
+  deletePayment,
 };

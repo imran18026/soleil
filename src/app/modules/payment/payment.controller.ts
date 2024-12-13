@@ -1,119 +1,89 @@
+import { Request, Response } from 'express';
 import httpStatus from 'http-status';
+import { PaymentService } from './payment.service';
 import catchAsync from '../../utils/catchAsync';
-import { paymentService } from './payment.service';
 import sendResponse from '../../utils/sendResponse';
 
-const addPayment = catchAsync(async (req, res, next) => {
+/**
+ * Get all payments
+ */
+const getAllPayments = catchAsync(async (req: Request, res: Response) => {
+  const result = await PaymentService.getAllPayments(req.query);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Payments retrieved successfully!',
+    data: result.payments,
+    meta: result.meta,
+  });
+});
+
+/**
+ * Get a single payment by ID
+ */
+const getPaymentById = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const result = await PaymentService.getPaymentById(id);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Payment retrieved successfully!',
+    data: result,
+  });
+});
+
+/**
+ * Create a new payment
+ */
+const createPayment = catchAsync(async (req: Request, res: Response) => {
   const data = req.body;
-  const result = await paymentService.addPaymentService(data);
+  const result = await PaymentService.createPayment(data);
 
-  if (result) {
-    sendResponse(res, {
-      statusCode: httpStatus.OK,
-      success: true,
-      message: 'Payment Successfull!!',
-      data: result,
-    });
-  } else {
-    sendResponse(res, {
-      statusCode: httpStatus.BAD_REQUEST,
-      success: true,
-      message: 'Data is not found',
-      data: {},
-    });
-  }
+  sendResponse(res, {
+    statusCode: httpStatus.CREATED,
+    success: true,
+    message: 'Payment created successfully!',
+    data: result,
+  });
 });
 
-const getAllPayment = catchAsync(async (req, res, next) => {
-  const result = await paymentService.getAllPaymentService(req.query);
-  // console.log('result',result)
+/**
+ * Update a payment
+ */
+const updatePayment = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const data = req.body;
+  const result = await PaymentService.updatePayment(id, data);
 
-  if (result) {
-    sendResponse(res, {
-      statusCode: httpStatus.OK,
-      success: true,
-      message: 'Payment are retrived Successfull!!',
-      data: result,
-    });
-  } else {
-    sendResponse(res, {
-      statusCode: httpStatus.BAD_REQUEST,
-      success: true,
-      message: 'Data is not found',
-      data: {},
-    });
-  }
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Payment updated successfully!',
+    data: result,
+  });
 });
 
-const getAllPaymentByMentor = catchAsync(async (req, res, next) => {
-  const { userId } = req.user;
-  const result = await paymentService.getAllPaymentByMentorService(
-    req.query,
-    userId,
-  );
-  // console.log('result',result)
-  if (result) {
-    sendResponse(res, {
-      statusCode: httpStatus.OK,
-      success: true,
-      message: 'My Payment are retrived Successfull!',
-      data: result,
-    });
-  } else {
-    sendResponse(res, {
-      statusCode: httpStatus.BAD_REQUEST,
-      success: true,
-      message: 'Data is not found',
-      data: {},
-    });
-  }
+/**
+ * Delete a payment
+ */
+const deletePayment = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const result = await PaymentService.deletePayment(id);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Payment deleted successfully!',
+    data: result,
+  });
 });
 
-const getSinglePayment = catchAsync(async (req, res, next) => {
-  const result = await paymentService.singlePaymentService(req.params.id);
-
-  if (result) {
-    sendResponse(res, {
-      statusCode: httpStatus.OK,
-      success: true,
-      message: 'Single Payment are retrived Successfull!',
-      data: result,
-    });
-  } else {
-    sendResponse(res, {
-      statusCode: httpStatus.BAD_REQUEST,
-      success: true,
-      message: 'Data is not found',
-      data: {},
-    });
-  }
-});
-
-const deleteSinglePayment = catchAsync(async (req, res, next) => {
-  // give me validation data
-  const result = await paymentService.deleteSinglePaymentService(req.params.id);
-
-  if (result) {
-    sendResponse(res, {
-      statusCode: httpStatus.OK,
-      success: true,
-      message: 'Single Delete Payment Successfull!!!',
-      data: result,
-    });
-  } else {
-    sendResponse(res, {
-      statusCode: httpStatus.BAD_REQUEST,
-      success: true,
-      message: 'Data is not found',
-      data: {},
-    });
-  }
-});
-
-export const paymentController = {
-  addPayment,
-  getAllPayment,
-  getSinglePayment,
-  deleteSinglePayment,
-  getAllPaymentByMentor,
+export const PaymentController = {
+  getAllPayments,
+  getPaymentById,
+  createPayment,
+  updatePayment,
+  deletePayment,
 };

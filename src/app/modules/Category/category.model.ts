@@ -9,7 +9,7 @@ const categorySchema = new Schema<TCategory, CategoryModel>(
     categoryName: { type: String, required: true, unique: true },
     addId: { type: String, required: true, unique: true },
     imageUrl: { type: String },
-    quantity: { type: Number, default: 0 },
+    totalQuantity: { type: Number, default: 0 },
     available: { type: Number, default: 0 },
     attributed: { type: Number, default: 0 },
     isDeleted: { type: Boolean, default: false },

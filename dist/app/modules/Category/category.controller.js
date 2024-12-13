@@ -26,7 +26,6 @@ const AppError_1 = __importDefault(require("../../error/AppError"));
 const addNewCategory = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const categoryData = req.body;
     const { file } = req;
-    console.log(file, categoryData);
     if (!file)
         throw new AppError_1.default(http_status_1.default.BAD_REQUEST, 'Image is required');
     const result = yield category_service_1.CategoryService.addNewCategory(file, categoryData);
@@ -40,7 +39,7 @@ const addNewCategory = (0, catchAsync_1.default)((req, res) => __awaiter(void 0,
 /**
  * Get all categories.
  */
-const getCategories = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getAllCategories = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const categories = yield category_service_1.CategoryService.getAllCategories(req.query);
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
@@ -82,9 +81,7 @@ const updateCategory = (0, catchAsync_1.default)((req, res) => __awaiter(void 0,
     const { id } = req.params;
     const categoryData = req.body;
     const { file } = req;
-    if (!file)
-        throw new AppError_1.default(http_status_1.default.BAD_REQUEST, 'Image is required');
-    const category = yield category_service_1.CategoryService.updateCategory(id, file, categoryData);
+    const category = yield category_service_1.CategoryService.updateCategory(id, categoryData, file);
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
@@ -121,7 +118,7 @@ const deleteCategoryFromDB = (0, catchAsync_1.default)((req, res) => __awaiter(v
 }));
 exports.CategoryController = {
     addNewCategory,
-    getCategories,
+    getAllCategories,
     getCategoryById,
     getProductsbyCategory,
     updateCategory,
