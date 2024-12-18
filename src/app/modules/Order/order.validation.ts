@@ -11,14 +11,11 @@ const createOrderValidationSchema = z.object({
     userId: z.string().min(1, 'User ID is required'),
     productInfoId: z.string().min(1, 'Product Info ID is required'),
     quantity: z.number().min(1, 'Quantity must be at least 1'),
-    totalAmount: z
-      .number()
-      .min(0, 'Total amount must be greater than or equal to 0'),
-    deliveryLocation: z.string().optional(),
-    isAbidjan: z.boolean().optional(),
-    phoneNumber: z.string().optional(),
-    isSaveLocation: z.boolean().optional(),
-    paymentId: z.string().optional(),
+    isAbidjan: z.boolean(),
+    deliveryLocation: z.string(),
+    isSaveLocation: z.boolean(),
+    phoneNumber: z.string(),
+    deliveryCost: z.number().optional(),
   }),
 });
 

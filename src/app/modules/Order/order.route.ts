@@ -2,10 +2,8 @@
 // Description: Express routes for Order module
 
 import express from 'express';
-import { OrderController } from './order.controller';
 import validateRequest from '../../middleware/validateRequest';
-import auth from '../../middleware/auth'; // Uncomment and configure for authentication
-import { USER_ROLE } from '../user/user.constants';
+import { OrderController } from './order.controller';
 import { orderValidations } from './order.validation';
 
 const router = express.Router();

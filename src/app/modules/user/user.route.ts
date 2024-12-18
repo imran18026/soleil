@@ -5,8 +5,8 @@ import parseData from '../../middleware/parseData';
 import validateRequest from '../../middleware/validateRequest';
 import { resentOtpValidations } from '../otp/otp.validation';
 import { USER_ROLE } from './user.constants';
-import { userController } from './user.controller';
 import { userValidation } from './user.validation';
+import { userController } from './user.controller';
 const upload = fileUpload('./public/uploads/profile');
 
 export const userRoutes = Router();
@@ -50,5 +50,3 @@ userRoutes
 
   //soft delete
   .patch('/:id', auth(USER_ROLE.ADMIN), userController.blockedUser);
-
-// export default userRoutes;

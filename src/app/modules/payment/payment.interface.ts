@@ -1,13 +1,16 @@
+// File: payment.interface.ts
+// Description: Interface for mobile payment system
+
 import { Types } from 'mongoose';
 
 export type TPayment = {
   userId: Types.ObjectId;
   productOrderId?: Types.ObjectId | null;
   subscriptionOrderId?: Types.ObjectId | null;
-  method: 'card' | 'Wave' | 'Orange_Money' | 'Mtn_Money' | 'Moov_Money';
+  method: 'Wave' | 'Orange_Money' | 'MTN_MoMo' | 'Moov_Money';
   status: 'pending' | 'success' | 'failed';
   transactionId: string;
-  clientSecret: string;
-  isAlreadyUsed: boolean;
-  transactionDate: Date;
+  amount: number;
+  createdAt: Date;
+  updatedAt: Date;
 };

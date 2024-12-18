@@ -7,6 +7,7 @@ import { PurchaseSubscription } from './purchaseSubscription.model';
 import QueryBuilder from '../../builder/QueryBuilder';
 import AppError from '../../error/AppError';
 import httpStatus from 'http-status';
+import { error } from 'console';
 
 /**
  * Creates a new subscription purchase.
@@ -19,13 +20,16 @@ const createOrder = async (
     throw new AppError(httpStatus.NOT_FOUND, 'User not found');
   }
 
-  const subscriptionPlan = await SubscriptionPlan.findOne({
-    _id: data.subscriptionId,
-  });
+  const subscriptionPlan = await SubscriptionPlan.findById(data.subscriptionId);
+
   if (!subscriptionPlan) {
     throw new AppError(httpStatus.NOT_FOUND, 'Subscription plan not found');
   }
+  data.videoDuration = subscriptionPlan.videoDuration;
   data.price = subscriptionPlan.price;
+  if (data.price === 0) {
+    data.subscriptionStatus = 'active';
+  }
 
   const session = await mongoose.startSession();
 
@@ -33,25 +37,53 @@ const createOrder = async (
     session.startTransaction();
 
     // Update user subscription status
-    await User.findByIdAndUpdate(
-      data.userId,
-      { isSubscribed: true },
-      { new: true, session },
-    );
+    // await User.findByIdAndUpdate(
+    //   data.userId,
+    //   { isSubscribed: true },
+    //   { new: true, session },
+    // );
 
-    // Calculate expire date
+    // await SubscriptionPlan.findByIdAndUpdate(
+    //   data.subscriptionId,
+    //   {
+    //     $inc: { quantity: 1 },
+    //   },
+    //   {
+    //     new: true,
+    //     session,
+    //   },
+    // );
+    // const payment = await Payment.findById(data.paymentId);
+
+    // if (
+    //   payment?.amount !== subscriptionPlan.price ||
+    //   subscriptionPlan.price !== 0
+    // ) {
+    //   throw new AppError(
+    //     httpStatus.BAD_REQUEST,
+    //     'Payment amount does not match subscription plan amount',
+    //   );
+    // }
     const expireDate = new Date();
-    expireDate.setDate(
-      expireDate.getDate() + subscriptionPlan.durationDays * 30,
-    );
-    data.expireDate = expireDate;
-
+    if (subscriptionPlan.videoDuration !== 2) {
+      expireDate.setDate(
+        expireDate.getDate() + subscriptionPlan.durationDays * 30,
+      );
+      data.expireDate = expireDate;
+    }
+    if (subscriptionPlan.durationDays === 2) {
+      expireDate.setDate(expireDate.getDate() + subscriptionPlan.durationDays);
+      data.expireDate = expireDate;
+    }
     const result = await PurchaseSubscription.create([data], { session });
     await session.commitTransaction();
     return result[0];
   } catch (error) {
     await session.abortTransaction();
-    throw error;
+    throw new AppError(
+      httpStatus.INTERNAL_SERVER_ERROR,
+      'Error from purchase subscription',
+    );
   } finally {
     await session.endSession();
   }

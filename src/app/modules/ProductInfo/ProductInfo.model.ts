@@ -2,8 +2,7 @@
 // Description: Mongoose schema and model for Category module
 
 import { Schema, model } from 'mongoose';
-import { ProductInfoModel, TProductInfo } from './ProductInfo.interface';
-
+import { ProductInfoModel, TProductInfo } from './productInfo.interface';
 const productInfoSchema = new Schema<TProductInfo, ProductInfoModel>(
   {
     categoryId: {

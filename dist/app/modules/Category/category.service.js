@@ -16,13 +16,13 @@ exports.CategoryService = void 0;
 // File: category.service.ts
 // Description: Service logic for the Category module
 const promises_1 = require("fs/promises");
+const http_status_1 = __importDefault(require("http-status"));
 const QueryBuilder_1 = __importDefault(require("../../builder/QueryBuilder"));
+const AppError_1 = __importDefault(require("../../error/AppError"));
+const product_model_1 = require("../Product/product.model");
 const category_constant_1 = require("./category.constant");
 const category_model_1 = require("./category.model");
-const AppError_1 = __importDefault(require("../../error/AppError"));
-const http_status_1 = __importDefault(require("http-status"));
-const product_model_1 = require("../Product/product.model");
-const ProductInfo_model_1 = require("../ProductInfo/ProductInfo.model");
+const productInfo_model_1 = require("../ProductInfo/productInfo.model");
 const addNewCategory = (file, data) => __awaiter(void 0, void 0, void 0, function* () {
     const isCategoryExist = yield category_model_1.Category.findOne({
         $or: [{ addID: data === null || data === void 0 ? void 0 : data.addId }, { categoryName: data === null || data === void 0 ? void 0 : data.categoryName }],
@@ -50,7 +50,7 @@ const getAllCategories = (query) => __awaiter(void 0, void 0, void 0, function* 
     return { meta, result };
 });
 const getProductsbyCategory = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    const productInfo = yield ProductInfo_model_1.ProductInfo.find({ categoryId: id });
+    const productInfo = yield productInfo_model_1.ProductInfo.find({ categoryId: id });
     const productArray = [];
     for (let i = 0; i < productInfo.length; i++) {
         const product = yield product_model_1.Product.find({

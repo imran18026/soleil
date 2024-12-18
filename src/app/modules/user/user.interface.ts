@@ -13,7 +13,7 @@ export interface TUserCreate {
 export interface TUser extends TUserCreate {
   _id: string;
   image: string;
-  orderdProducts: number;
+  orderProducts: number;
   isSubscribed: boolean;
   location?: string;
   isActive: boolean;

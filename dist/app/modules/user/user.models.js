@@ -49,7 +49,7 @@ const userSchema = new mongoose_1.Schema({
         type: String,
         required: true,
     },
-    orderdProducts: {
+    orderProducts: {
         type: Number,
         required: true,
         default: 0,

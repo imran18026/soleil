@@ -26,8 +26,8 @@ const purchaseSubscriptionSchema = new Schema<
     },
     subscriptionStatus: {
       type: String,
-      enum: ['active', 'expired', 'cancelled'],
-      default: 'active',
+      enum: ['pending', 'active', 'expired', 'cancelled'],
+      default: 'pending',
     },
     paymentStatus: {
       type: String,
@@ -35,6 +35,10 @@ const purchaseSubscriptionSchema = new Schema<
       default: 'pending',
     },
     price: {
+      type: Number,
+      required: true,
+    },
+    videoDuration: {
       type: Number,
       required: true,
     },

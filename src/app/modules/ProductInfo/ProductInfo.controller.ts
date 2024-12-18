@@ -8,8 +8,8 @@ import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
 
 import AppError from '../../error/AppError';
-import { TProductInfo } from './ProductInfo.interface';
-import { ProductInfoService } from './ProductInfo.service';
+import { ProductInfoService } from './productInfo.service';
+import { TProductInfo } from './productInfo.interface';
 
 /**
  * Create a new category.
@@ -38,7 +38,6 @@ const addQuantity = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
   const { quantity } = req.body;
   // const data = await
-  
 
   const result = await ProductInfoService.addQuantity(id, quantity);
 
@@ -53,8 +52,8 @@ const addQuantity = catchAsync(async (req: Request, res: Response) => {
 /**
  * Get all categories.
  */
-const getAllProducts = catchAsync(async (req: Request, res: Response) => {
-  const categories = await ProductInfoService.getAllProducts(req.query);
+const getAllProductsInfo = catchAsync(async (req: Request, res: Response) => {
+  const categories = await ProductInfoService.getAllProductsInfo(req.query);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -178,7 +177,7 @@ const getproductInfoById = catchAsync(async (req: Request, res: Response) => {
 
 export const ProductInfoController = {
   addNewProduct,
-  getAllProducts,
+  getAllProductsInfo,
   getproductInfoById,
   // getProductsbyCategory,
   // updateCategory,
