@@ -1,10 +1,6 @@
 // File: category.service.ts
 // Description: Service logic for the Category module
 import QueryBuilder from '../../builder/QueryBuilder';
-import {
-  categoryFilterableFields,
-  categorySearchableFields,
-} from './ProductInfo.constant';
 
 import httpStatus from 'http-status';
 import AppError from '../../error/AppError';
@@ -13,8 +9,8 @@ import { Product } from '../Product/product.model';
 import mongoose from 'mongoose';
 import { Category } from '../Category/category.model';
 import { TProduct } from '../Product/product.interface';
-import { ProductInfo } from './ProductInfo.model';
-import { TProductInfo } from './ProductInfo.interface';
+import { TProductInfo } from './productInfo.interface';
+import { ProductInfo } from './productInfo.model';
 
 //add new product
 const addNewProduct = async (
@@ -245,13 +241,13 @@ const hideProduct = async (id: string) => {
   return result;
 };
 
-const getAllProducts = async (query: Record<string, unknown>) => {
+const getAllProductsInfo = async (query: Record<string, unknown>) => {
   const categoryQuery = new QueryBuilder(
     ProductInfo.find().populate('categoryId'),
     query,
   )
-    .search(categorySearchableFields) // Searchable fields
-    .filter(categoryFilterableFields) // Filterable fields
+    .search([]) // Searchable fields
+    .filter([]) // Filterable fields
     .sort()
     .paginate()
     .fields();
@@ -330,7 +326,7 @@ const getproductInfoById = async (id: string): Promise<TProductInfo | null> => {
 
 export const ProductInfoService = {
   addNewProduct,
-  getAllProducts,
+  getAllProductsInfo,
   getproductInfoById,
   getProductsbyCategory,
   // updateCategory,

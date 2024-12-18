@@ -1,17 +1,37 @@
+// File: payment.controller.ts
+// Description: Controller logic for Payment module
+
 import { Request, Response } from 'express';
-import httpStatus from 'http-status';
 import { PaymentService } from './payment.service';
 import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
 
-/**
- * Get all payments
- */
+const createPayment = catchAsync(async (req: Request, res: Response) => {
+  const paymentData = req.body;
+  const result = await PaymentService.createPayment(paymentData);
+  sendResponse(res, {
+    statusCode: 201,
+    success: true,
+    message: 'Payment created successfully!',
+    data: result,
+  });
+});
+
+const processPayment = catchAsync(async (req: Request, res: Response) => {
+  const id = req.params.id;
+  const result = await PaymentService.processPayment(id);
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Payment processed successfully!',
+    data: result,
+  });
+});
+
 const getAllPayments = catchAsync(async (req: Request, res: Response) => {
   const result = await PaymentService.getAllPayments(req.query);
-
   sendResponse(res, {
-    statusCode: httpStatus.OK,
+    statusCode: 200,
     success: true,
     message: 'Payments retrieved successfully!',
     data: result.payments,
@@ -19,61 +39,34 @@ const getAllPayments = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-/**
- * Get a single payment by ID
- */
 const getPaymentById = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
   const result = await PaymentService.getPaymentById(id);
-
   sendResponse(res, {
-    statusCode: httpStatus.OK,
+    statusCode: 200,
     success: true,
     message: 'Payment retrieved successfully!',
     data: result,
   });
 });
 
-/**
- * Create a new payment
- */
-const createPayment = catchAsync(async (req: Request, res: Response) => {
-  const data = req.body;
-  const result = await PaymentService.createPayment(data);
-
-  sendResponse(res, {
-    statusCode: httpStatus.CREATED,
-    success: true,
-    message: 'Payment created successfully!',
-    data: result,
-  });
-});
-
-/**
- * Update a payment
- */
 const updatePayment = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
-  const data = req.body;
-  const result = await PaymentService.updatePayment(id, data);
-
+  const paymentData = req.body;
+  const result = await PaymentService.updatePayment(id, paymentData);
   sendResponse(res, {
-    statusCode: httpStatus.OK,
+    statusCode: 200,
     success: true,
     message: 'Payment updated successfully!',
     data: result,
   });
 });
 
-/**
- * Delete a payment
- */
 const deletePayment = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
   const result = await PaymentService.deletePayment(id);
-
   sendResponse(res, {
-    statusCode: httpStatus.OK,
+    statusCode: 200,
     success: true,
     message: 'Payment deleted successfully!',
     data: result,
@@ -81,9 +74,10 @@ const deletePayment = catchAsync(async (req: Request, res: Response) => {
 });
 
 export const PaymentController = {
+  createPayment,
+  processPayment,
   getAllPayments,
   getPaymentById,
-  createPayment,
   updatePayment,
   deletePayment,
 };

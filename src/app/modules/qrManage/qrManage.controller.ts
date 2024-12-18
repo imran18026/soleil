@@ -9,7 +9,6 @@ import { createQrManageService } from './qrManage.service';
 
 const createQrManage = catchAsync(async (req: Request, res: Response) => {
   const qrManageData = req.body;
-
   const result = await createQrManageService.createQrManage(qrManageData);
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
@@ -23,7 +22,6 @@ const getAllQrManage = catchAsync(async (req, res) => {
   const { id } = req.params;
   console.log({ id });
   const result = await createQrManageService.getAllQrManage(id);
-
   res.status(200).send(result);
 });
 

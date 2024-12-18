@@ -11,8 +11,8 @@ const parseData_1 = __importDefault(require("../../middleware/parseData"));
 const validateRequest_1 = __importDefault(require("../../middleware/validateRequest"));
 const otp_validation_1 = require("../otp/otp.validation");
 const user_constants_1 = require("./user.constants");
-const user_controller_1 = require("./user.controller");
 const user_validation_1 = require("./user.validation");
+const user_controller_1 = require("./user.controller");
 const upload = (0, fileUpload_1.default)('./public/uploads/profile');
 exports.userRoutes = (0, express_1.Router)();
 exports.userRoutes
@@ -27,4 +27,3 @@ user_controller_1.userController.getAllUsers)
     .delete('/delete-my-account', (0, auth_1.default)(user_constants_1.USER_ROLE.ADMIN, user_constants_1.USER_ROLE.CUSTOMER), user_controller_1.userController.deleteMyAccount)
     //soft delete
     .patch('/:id', (0, auth_1.default)(user_constants_1.USER_ROLE.ADMIN), user_controller_1.userController.blockedUser);
-// export default userRoutes;

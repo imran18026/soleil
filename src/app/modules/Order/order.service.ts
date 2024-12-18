@@ -9,7 +9,7 @@ import { Order } from './order.model';
 import QueryBuilder from '../../builder/QueryBuilder';
 import AppError from '../../error/AppError';
 import httpStatus from 'http-status';
-import { ProductInfo } from '../ProductInfo/ProductInfo.model';
+import { ProductInfo } from '../ProductInfo/productInfo.model';
 import { orderSearchableFields } from './order.constant';
 
 /**
@@ -30,6 +30,15 @@ const createOrder = async (data: Partial<TOrder>): Promise<TOrder> => {
     throw new AppError(httpStatus.BAD_REQUEST, 'Product info not found');
   }
 
+  if (!data.deliveryCost) {
+    throw new AppError(httpStatus.BAD_REQUEST, 'Delivery cost is required');
+  }
+
+  if (data.deliveryCost && data.quantity) {
+    data.price = data.quantity * productInfo.price + data.deliveryCost;
+    data.productsCost = data.quantity * productInfo.price;
+  }
+
   const availableProducts = await Product.find({
     productInfoId: data.productInfoId,
     isSold: false,
@@ -38,47 +47,22 @@ const createOrder = async (data: Partial<TOrder>): Promise<TOrder> => {
   if (availableProducts.length < data.quantity) {
     throw new AppError(
       httpStatus.BAD_REQUEST,
-      `Only ${availableProducts.length} products are available`,
+      `Only ${availableProducts.length} products available`,
     );
   }
 
   const session = await mongoose.startSession();
-  const productIdArray: string[] = [];
 
   try {
     session.startTransaction();
 
-    for (let i = 0; i < data.quantity; i++) {
-      const product = await Product.findOneAndUpdate(
-        { productInfoId: data.productInfoId, isSold: false },
-        { isSold: true },
-        { new: true, session },
-      );
-      if (product) {
-        productIdArray.push(product._id.toString());
-      }
-    }
-
-    data.productIds = productIdArray;
-
-    await User.findByIdAndUpdate(
-      data.userId,
-      { $inc: { orderdProducts: data.quantity } },
-      { session },
-    );
-
-    await ProductInfo.findByIdAndUpdate(
-      data.productInfoId,
-      { $inc: { attributed: data.quantity } },
-      { session },
-    );
-
-    const order = await Order.create([data], { session });
+    const order = await Order.create(data);
+    console.log(order);
     await session.commitTransaction();
-    return order[0];
+    return order;
   } catch (error) {
     await session.abortTransaction();
-    throw error;
+    throw new AppError(httpStatus.NOT_FOUND, 'Order failed');
   } finally {
     session.endSession();
   }

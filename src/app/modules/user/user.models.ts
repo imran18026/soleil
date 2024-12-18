@@ -37,7 +37,7 @@ const userSchema = new Schema<TUser>(
       type: String,
       required: true,
     },
-    orderdProducts: {
+    orderProducts: {
       type: Number,
       required: true,
       default: 0,

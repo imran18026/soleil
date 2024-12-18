@@ -40,6 +40,11 @@ export default {
   socket_port: process.env.SOCKET_PORT,
   stripe_secret: process.env.STRIPE_API_SECRET,
   stripe_key: process.env.STRIPE_API_KEY,
+  wave_payment_url: process.env.WAVE_PAYMENT_URL,
+  orange_money_payment_url: process.env.ORANGE_MONEY_PAYMENT_URL,
+  mtn_momo_payment_url: process.env.MTN_MOMO_PAYMENT_URL,
+  moov_money_payment_url: process.env.MOOV_MONEY_PAYMENT_URL,
+
   aws,
   stripe,
 };

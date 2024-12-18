@@ -15,13 +15,17 @@ const orderSchema = new Schema<TOrder, OrderModel>(
       {
         type: Schema.Types.ObjectId,
         ref: 'Product',
-        required: true,
       },
     ],
     paymentId: {
       type: Schema.Types.ObjectId,
       ref: 'Payment',
       default: null,
+    },
+    productsCost: {
+      type: Number,
+      required: true,
+      default: 0,
     },
     orderPaymentStatus: {
       type: String,
@@ -43,18 +47,20 @@ const orderSchema = new Schema<TOrder, OrderModel>(
       required: true,
       default: 0,
     },
+
+    price: {
+      type: Number,
+      required: true,
+    },
     date: {
       type: Date,
       default: Date.now,
     },
-    totalAmount: {
-      type: Number,
-      required: true,
-    },
+
     status: {
       type: String,
-      enum: ['New order', 'In the procss', 'Odrer delivered'],
-      default: 'New order',
+      enum: ['pending', 'New order', 'In the process', 'Order delivered'],
+      default: 'pending',
     },
     isAbidjan: {
       type: Boolean,
@@ -70,7 +76,7 @@ const orderSchema = new Schema<TOrder, OrderModel>(
     phoneNumber: {
       type: String,
     },
-    ispaymentDone: {
+    isPaymentDone: {
       type: Boolean,
       default: false,
     },

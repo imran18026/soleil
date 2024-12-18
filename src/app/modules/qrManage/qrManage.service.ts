@@ -1,11 +1,3 @@
-import mongoose from 'mongoose';
-import { Product } from '../Product/product.model';
-
-import { User } from '../user/user.models';
-import QueryBuilder from '../../builder/QueryBuilder';
-import AppError from '../../error/AppError';
-import httpStatus from 'http-status';
-import { ProductInfo } from '../ProductInfo/ProductInfo.model';
 import { TQrManage } from './qrManage.interface';
 import { QrManage } from './qrManage.model';
 
@@ -21,9 +13,6 @@ const createQrManage = async (
 };
 
 const getAllQrManage = async (productId: string) => {
-
-
-  
   const qrManageQuery = await QrManage.findOne({ user: productId });
 
   const htmlResponse = `

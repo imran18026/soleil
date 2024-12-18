@@ -1,16 +1,15 @@
+// File: payment.model.ts
+// Description: Schema and model for mobile payment system
+
 import { Schema, model } from 'mongoose';
 import { TPayment } from './payment.interface';
 
 const paymentSchema = new Schema<TPayment>(
   {
-    userId: {
-      type: Schema.Types.ObjectId,
-      ref: 'User',
-      required: true,
-    },
+    userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     productOrderId: {
       type: Schema.Types.ObjectId,
-      ref: 'Order',
+      ref: 'ProductOrder',
       default: null,
     },
     subscriptionOrderId: {
@@ -20,7 +19,7 @@ const paymentSchema = new Schema<TPayment>(
     },
     method: {
       type: String,
-      enum: ['card', 'Wave', 'Orange_Money', 'Mtn_Money', 'Moov_Money'],
+      enum: ['Wave', 'Orange_Money', 'MTN_MoMo', 'Moov_Money'],
       required: true,
     },
     status: {
@@ -28,22 +27,8 @@ const paymentSchema = new Schema<TPayment>(
       enum: ['pending', 'success', 'failed'],
       default: 'pending',
     },
-    transactionId: {
-      type: String,
-      required: true,
-    },
-    clientSecret: {
-      type: String,
-      required: true,
-    },
-    isAlreadyUsed: {
-      type: Boolean,
-      default: false,
-    },
-    transactionDate: {
-      type: Date,
-      default: Date.now,
-    },
+    transactionId: { type: String, required: true },
+    amount: { type: Number, required: true },
   },
   {
     timestamps: true,

@@ -4,8 +4,8 @@
 import express, { NextFunction, Request, Response } from 'express';
 import { FileUploadHelper } from '../../helpers/fileUploadHelpers';
 import validateRequest from '../../middleware/validateRequest';
-import { productInfoValidations } from './ProductInfo.validation';
-import { ProductInfoController } from './ProductInfo.controller';
+import { productInfoValidations } from './productInfo.validation';
+import { ProductInfoController } from './productInfo.controller';
 
 const router = express.Router();
 
@@ -28,7 +28,7 @@ router.post(
   // auth(USER_ROLE.admin),
   ProductInfoController.addQuantity,
 );
-router.get('/', ProductInfoController.getAllProducts);
+router.get('/', ProductInfoController.getAllProductsInfo);
 
 router.patch(
   '/:id',

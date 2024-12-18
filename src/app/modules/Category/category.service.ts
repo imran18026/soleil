@@ -1,20 +1,18 @@
 // File: category.service.ts
 // Description: Service logic for the Category module
 import { unlink } from 'fs/promises';
+import httpStatus from 'http-status';
 import QueryBuilder from '../../builder/QueryBuilder';
+import AppError from '../../error/AppError';
+import { Product } from '../Product/product.model';
+
 import {
   categoryFilterableFields,
   categorySearchableFields,
 } from './category.constant';
 import { TCategory } from './category.interface';
 import { Category } from './category.model';
-import { FileUploadHelper } from '../../helpers/fileUploadHelpers';
-import AppError from '../../error/AppError';
-import httpStatus from 'http-status';
-import { Product } from '../Product/product.model';
-import { ProductInfo } from '../ProductInfo/ProductInfo.model';
-import { deleteFile } from '../../utils/fileHelper';
-
+import { ProductInfo } from '../ProductInfo/productInfo.model';
 const addNewCategory = async (
   file: Express.Multer.File,
   data: Partial<TCategory>,
