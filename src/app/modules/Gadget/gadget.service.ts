@@ -4,8 +4,10 @@ import httpStatus from 'http-status';
 import QueryBuilder from '../../builder/QueryBuilder';
 import { TGadgets } from './gadget.interface';
 import { Gadgets } from './gadget.model';
+import AppError from '../../error/AppError';
 
 const addNewGadget = async (
+  id: string,
   files: Express.Multer.File[],
   data: Partial<TGadgets>,
 ): Promise<TGadgets> => {
@@ -37,22 +39,44 @@ const addNewGadget = async (
     ...data.voice,
     valueLocation: data.voice?.valueLocation ?? fileUrls[0],
   };
+  const gadgetsId = await Gadgets.findOne({ productId: id }).select('id');
+  if (!gadgetsId) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Gadget not found');
+  }
+  // if (!gadgetsId) {
+  //   throw new Error('Gadget not found');
+  // }
+  // await unlink(gadgetsId.contactDetails.photos.photo1);
+  // await unlink(gadgetsId.contactDetails.photos.photo2);
+  // await unlink(gadgetsId.video.valueLocation);
+  // await unlink(gadgetsId.voice.valueLocation);
 
-  const result = await Gadgets.create({
-    ...data,
-    contactDetails: {
-      ...(data.contactDetails || {}),
+  const result = await Gadgets.findByIdAndUpdate(
+    gadgetsId,
+    {
+      ...data,
+      contactDetails: {
+        ...(data.contactDetails || {}),
+      },
+      text: {
+        ...(data.text || {}),
+      },
+      video: {
+        ...(data.video || {}),
+      },
+      voice: {
+        ...(data.voice || {}),
+      },
     },
-    text: {
-      ...(data.text || {}),
+    {
+      new: true,
+      runValidators: true,
     },
-    video: {
-      ...(data.video || {}),
-    },
-    voice: {
-      ...(data.voice || {}),
-    },
-  });
+  );
+
+  if (!result) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Gadget not found');
+  }
 
   return result;
 };

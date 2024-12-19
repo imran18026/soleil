@@ -94,6 +94,7 @@ import { PurchaseSubscription } from '../PurchaseSubscription/purchaseSubscripti
 import mongoose from 'mongoose';
 import { Product } from '../Product/product.model';
 import { ProductInfo } from '../ProductInfo/productInfo.model';
+import { Gadgets } from '../Gadget/gadget.model';
 
 /**
  * Utility function to make HTTPS POST requests
@@ -147,15 +148,18 @@ const createPayment = async (data: TPayment): Promise<TPayment | any> => {
   let order;
   if (data.productOrderId) {
     order = await Order.findById(data.productOrderId);
+
     if (!order) {
       throw new AppError(httpStatus.NOT_FOUND, 'Product order not found');
     }
+    data.amount = order.price;
   }
   if (data.subscriptionOrderId) {
     order = await PurchaseSubscription.findById(data.subscriptionOrderId);
     if (!order) {
       throw new AppError(httpStatus.NOT_FOUND, 'Subscription order not found');
     }
+    data.amount = order.price;
   }
 
   // console.log(user, order);
@@ -200,10 +204,6 @@ const processPayment = async (id: string): Promise<TPayment> => {
     //   Authorization: `Bearer ${paymentData.transactionId}`,
     // });
 
-    if (!paymentRecord) {
-      throw new AppError(httpStatus.NOT_FOUND, 'Payment not found');
-    }
-
     if (paymentRecord?.subscriptionOrderId !== null) {
       await User.findByIdAndUpdate(paymentRecord.userId, {
         isSubscribed: true,
@@ -226,17 +226,29 @@ const processPayment = async (id: string): Promise<TPayment> => {
     if (paymentRecord?.productOrderId !== null) {
       const data = await Order.findById(paymentRecord.productOrderId);
 
-      if (!data)
+      if (!data) {
         throw new AppError(httpStatus.NOT_FOUND, 'Order data not found');
+      }
+
       const productIdArray: string[] = [];
+
       for (let i = 0; i < data.quantity; i++) {
         const product = await Product.findOneAndUpdate(
           { productInfoId: data.productInfoId, isSold: false },
           { isSold: true },
           { new: true, session },
         );
+
         if (product) {
           productIdArray.push(product._id.toString());
+
+          await Gadgets.create(
+            {
+              userId: paymentRecord.userId,
+              productId: product._id,
+            },
+            { session },
+          );
         }
       }
 
@@ -268,20 +280,19 @@ const processPayment = async (id: string): Promise<TPayment> => {
       );
     }
 
-    await Payment.findByIdAndUpdate(
+    const result = await Payment.findByIdAndUpdate(
       id,
       {
         status: 'success',
       },
       {
         new: true,
-        runValidators: true,
+        // runValidators: true,
         session,
       },
     );
-
     await session.commitTransaction();
-    return paymentRecord;
+    return result as TPayment;
   } catch (error) {
     await session.abortTransaction();
     throw new AppError(httpStatus.INTERNAL_SERVER_ERROR, 'Payment failed');
