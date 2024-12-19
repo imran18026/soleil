@@ -75,8 +75,8 @@ export type TGadgets = {
   userId: Types.ObjectId;
   productId: Types.ObjectId;
   subscriptionOrderId?: Types.ObjectId | null;
-  registrationFor: 'myself' | 'myBusiness';
-  contactDetails: TCommonContactDetails;
+  registrationFor?: 'myself' | 'myBusiness';
+  contactDetails?: TCommonContactDetails;
   text?: TText;
   video?: TVideo;
   voice?: TVoice;

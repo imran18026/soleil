@@ -80,17 +80,17 @@ const CommonContactDetailsSchema = new Schema({
 // Main Gadgets Schema
 const gadgetsSchema = new Schema<TGadgets, GadgetsModel>(
   {
-    userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-    productId: { type: Schema.Types.ObjectId, ref: 'Product', required: true },
+    userId: { type: Schema.Types.ObjectId, ref: 'User' },
+    productId: { type: Schema.Types.ObjectId, ref: 'Product' },
     subscriptionOrderId: {
       type: Schema.Types.ObjectId,
       ref: 'SubscriptionOrder',
-      required: true,
+      required: false,
     },
     registrationFor: {
       type: String,
       enum: ['myself', 'myBusiness'],
-      required: true,
+      required: false,
     },
     contactDetails: { type: CommonContactDetailsSchema, required: false },
     text: { type: TextSchema, required: false },

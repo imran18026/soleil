@@ -14,12 +14,13 @@ import { GadgetsService } from './gadget.service';
 const addNewGadget = catchAsync(async (req: Request, res: Response) => {
   const gadgetData: Partial<TGadgets> = req.body;
   let files = req.files as Express.Multer.File[];
+  const { id } = req.params;
 
   if (!files) {
     // throw new AppError(httpStatus.BAD_REQUEST, 'file are required');
     files = [];
   }
-  const result = await GadgetsService.addNewGadget(files, gadgetData);
+  const result = await GadgetsService.addNewGadget(id, files, gadgetData);
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
     success: true,

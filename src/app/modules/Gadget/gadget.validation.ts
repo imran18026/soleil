@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-const addValidationSchema = z.object({
+const updateValidationSchema = z.object({
   userId: z.string(),
   productId: z.string(),
   subscriptionOrderId: z.string(),
@@ -116,7 +116,7 @@ const addTextValidationSchema = z.object({
 });
 
 export const gadgetsValidations = {
-  addValidationSchema,
+  updateValidationSchema,
   addVideosValidationSchema,
   addVoiceValidationSchema,
   addTextValidationSchema,
