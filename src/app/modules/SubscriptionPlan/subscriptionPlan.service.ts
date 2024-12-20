@@ -17,7 +17,9 @@ const createSubscriptionPlan = async (
       'Plan with this name already exists',
     );
   }
-
+  if (data.durationDays !== 2) {
+    data.durationDays = data.durationDays * 30;
+  }
   const result = await SubscriptionPlan.create(data);
   return result;
 };

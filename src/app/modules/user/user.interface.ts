@@ -15,6 +15,7 @@ export interface TUser extends TUserCreate {
   image: string;
   orderProducts: number;
   isSubscribed: boolean;
+  subcriptionOrderId?: Types.ObjectId;
   location?: string;
   isActive: boolean;
   isDeleted: boolean;

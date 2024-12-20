@@ -36,6 +36,11 @@ const userSchema = new mongoose_1.Schema({
         enum: user_constants_1.Role,
         default: user_constants_1.USER_ROLE.CUSTOMER,
     },
+    subcriptionOrderId: {
+        type: String,
+        required: false,
+        ref: 'SubscriptionOrder',
+    },
     isSubscribed: {
         type: Boolean,
         default: false,

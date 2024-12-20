@@ -9,6 +9,7 @@ export type TProductInfo = {
   price: number;
   description: string;
   quantity: number;
+  available: number;
   attributed: number;
   images: string[];
   isHidden: boolean;
