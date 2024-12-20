@@ -8,6 +8,7 @@ import QueryBuilder from '../../builder/QueryBuilder';
 import AppError from '../../error/AppError';
 import httpStatus from 'http-status';
 import { error } from 'console';
+import { all } from 'axios';
 
 /**
  * Creates a new subscription purchase.
@@ -92,6 +93,19 @@ const createOrder = async (
 /**
  * Get all subscription purchases.
  */
+
+const noOfAllPremium = async () => {
+  const allPlans = await SubscriptionPlan.find({
+    name: { $nin: ['free', 'Free'] },
+  }).select('quantity');
+
+  const totalQuantity = allPlans.reduce(
+    (sum, plan) => sum + (plan.quantity || 0),
+    0,
+  );
+
+  return totalQuantity;
+};
 const getAllOrders = async (query: Record<string, unknown>) => {
   const categoryQuery = new QueryBuilder(
     PurchaseSubscription.find().populate('userId').populate('subscriptionId'),
@@ -150,4 +164,5 @@ export const PurchaseSubscriptionService = {
   myOrders,
   getOrderById,
   updatePaymentStatus,
+  noOfAllPremium,
 };

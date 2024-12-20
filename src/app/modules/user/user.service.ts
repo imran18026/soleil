@@ -172,6 +172,9 @@ const updateUser = async (id: string, payload: Partial<TUser>) => {
 
 // ............................rest
 
+const noforUsers = async (): Promise<number> => {
+  return (await User.countDocuments()) - 1;
+};
 const getAllUserQuery = async (query: Record<string, unknown>) => {
   const userQuery = new QueryBuilder(User.find({}), query)
     .search([''])
@@ -294,6 +297,7 @@ const blockedUser = async (id: string) => {
 
 export const userService = {
   createUserToken,
+  noforUsers,
   otpVerifyAndCreateUser,
   getUserById,
   getUserByEmail,

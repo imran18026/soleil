@@ -96,6 +96,7 @@ import { Product } from '../Product/product.model';
 import { ProductInfo } from '../ProductInfo/productInfo.model';
 import { Gadgets } from '../Gadget/gadget.model';
 import { Category } from '../Category/category.model';
+import { SubscriptionPlan } from '../SubscriptionPlan/subscriptionPlan.model';
 
 /**
  * Utility function to make HTTPS POST requests
@@ -215,11 +216,10 @@ const processPayment = async (id: string): Promise<TPayment> => {
         session,
       );
 
-      await PurchaseSubscription.findByIdAndUpdate(
+      const subscription = await PurchaseSubscription.findByIdAndUpdate(
         paymentRecord.subscriptionOrderId,
         {
           status: 'active',
-          // subscriptionStatus: 'active',
           paymentId: paymentRecord._id,
         },
         {
@@ -228,6 +228,10 @@ const processPayment = async (id: string): Promise<TPayment> => {
           session,
         },
       );
+
+      await SubscriptionPlan.findByIdAndUpdate(subscription?.subscriptionId, {
+        $inc: { quantity: 1 },
+      });
     }
 
     if (paymentRecord?.productOrderId !== null) {

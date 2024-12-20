@@ -50,6 +50,15 @@ const getAllUsers = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, vo
         message: 'Users All are requered successful!!',
     });
 }));
+const noforUsers = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield user_service_1.userService.noforUsers();
+    (0, sendResponse_1.default)(res, {
+        success: true,
+        statusCode: http_status_1.default.OK,
+        data: result,
+        message: 'Get All User Count successful!!',
+    });
+}));
 const getAllUserCount = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield user_service_1.userService.getAllUserCount();
     (0, sendResponse_1.default)(res, {
@@ -131,6 +140,7 @@ const deleteMyAccount = (0, catchAsync_1.default)((req, res) => __awaiter(void 0
     });
 }));
 exports.userController = {
+    noforUsers,
     createUser,
     userCreateVarification,
     getUserById,

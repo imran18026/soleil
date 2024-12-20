@@ -18,6 +18,7 @@ exports.userRoutes = (0, express_1.Router)();
 exports.userRoutes
     .post('/create', (0, validateRequest_1.default)(user_validation_1.userValidation === null || user_validation_1.userValidation === void 0 ? void 0 : user_validation_1.userValidation.userValidationSchema), user_controller_1.userController.createUser)
     .post('/create-user-verify-otp', (0, validateRequest_1.default)(otp_validation_1.resentOtpValidations.verifyOtpZodSchema), user_controller_1.userController.userCreateVarification)
+    .get('/no-of-users', user_controller_1.userController.noforUsers)
     .get('/my-profile', (0, auth_1.default)(user_constants_1.USER_ROLE.ADMIN, user_constants_1.USER_ROLE.CUSTOMER), user_controller_1.userController.getMyProfile)
     .get('/all-users', 
 // auth(USER_ROLE.ADMIN),

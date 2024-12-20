@@ -25,6 +25,9 @@ router.get(
 );
 
 router.get(
+  '/no-of-orders',OrderController.noOfOrders)
+
+router.get(
   '/my-orders/:id',
   // auth(USER_ROLE.CUSTOMER),
   OrderController.myOrders,

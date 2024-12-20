@@ -15,6 +15,16 @@ const createOrder = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const noOfAllPremium = catchAsync(async (req: Request, res: Response) => {
+  const result = await PurchaseSubscriptionService.noOfAllPremium();
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Subscription orders retrieved successfully!',
+    data: result,
+  });
+})
+
 const getAllOrders = catchAsync(async (req: Request, res: Response) => {
   const result = await PurchaseSubscriptionService.getAllOrders(req.query);
   sendResponse(res, {
@@ -64,6 +74,7 @@ const updatePaymentStatus = catchAsync(async (req: Request, res: Response) => {
 
 export const PurchaseSubscriptionController = {
   createOrder,
+  noOfAllPremium,
   getAllOrders,
   myOrders,
   getOrderById,

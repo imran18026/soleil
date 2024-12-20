@@ -51,7 +51,15 @@ const getMyOrders = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
-
+const noOfOrders = catchAsync(async (req: Request, res: Response) => {
+  const result = await OrderService.noOfOrders();
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'My orders retrieved successfully!',
+    data: result,
+  });
+});
 const getOrderById = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
   const result = await OrderService.getOrderById(id);
@@ -159,6 +167,7 @@ const deleteOrder = catchAsync(async (req: Request, res: Response) => {
 
 export const OrderController = {
   createOrder,
+  noOfOrders,
   getAllOrders,
   getMyOrders,
   getOrderById,

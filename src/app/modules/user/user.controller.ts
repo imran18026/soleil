@@ -44,6 +44,17 @@ const getAllUsers = catchAsync(async (req, res) => {
   });
 });
 
+const noforUsers = catchAsync(async (req, res) => {
+  const result = await userService.noforUsers();
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    data: result,
+    message: 'Get All User Count successful!!',
+  });
+});
+
 const getAllUserCount = catchAsync(async (req, res) => {
   const result = await userService.getAllUserCount();
 
@@ -135,6 +146,7 @@ const deleteMyAccount = catchAsync(async (req: Request, res: Response) => {
 });
 
 export const userController = {
+  noforUsers,
   createUser,
   userCreateVarification,
   getUserById,

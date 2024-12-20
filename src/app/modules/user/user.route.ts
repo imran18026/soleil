@@ -17,11 +17,13 @@ userRoutes
     validateRequest(userValidation?.userValidationSchema),
     userController.createUser,
   )
+  
   .post(
     '/create-user-verify-otp',
     validateRequest(resentOtpValidations.verifyOtpZodSchema),
     userController.userCreateVarification,
   )
+  .get('/no-of-users', userController.noforUsers)
   .get(
     '/my-profile',
     auth(USER_ROLE.ADMIN, USER_ROLE.CUSTOMER),
