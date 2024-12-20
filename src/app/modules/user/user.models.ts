@@ -24,6 +24,11 @@ const userSchema = new Schema<TUser>(
       enum: Role,
       default: USER_ROLE.CUSTOMER,
     },
+    subcriptionOrderId: {
+      type: String,
+      required: false,
+      ref: 'SubscriptionOrder',
+    },
     isSubscribed: {
       type: Boolean,
       default: false,

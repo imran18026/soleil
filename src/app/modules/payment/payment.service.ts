@@ -95,6 +95,7 @@ import mongoose from 'mongoose';
 import { Product } from '../Product/product.model';
 import { ProductInfo } from '../ProductInfo/productInfo.model';
 import { Gadgets } from '../Gadget/gadget.model';
+import { Category } from '../Category/category.model';
 
 /**
  * Utility function to make HTTPS POST requests
@@ -205,9 +206,14 @@ const processPayment = async (id: string): Promise<TPayment> => {
     // });
 
     if (paymentRecord?.subscriptionOrderId !== null) {
-      await User.findByIdAndUpdate(paymentRecord.userId, {
-        isSubscribed: true,
-      });
+      await User.findByIdAndUpdate(
+        paymentRecord.userId,
+        {
+          isSubscribed: true,
+          subcriptionOrderId: paymentRecord.subscriptionOrderId,
+        },
+        session,
+      );
 
       await PurchaseSubscription.findByIdAndUpdate(
         paymentRecord.subscriptionOrderId,
@@ -219,6 +225,7 @@ const processPayment = async (id: string): Promise<TPayment> => {
         {
           new: true,
           runValidators: true,
+          session,
         },
       );
     }
@@ -241,6 +248,26 @@ const processPayment = async (id: string): Promise<TPayment> => {
 
         if (product) {
           productIdArray.push(product._id.toString());
+
+          const productInfo = await ProductInfo.findByIdAndUpdate(
+            product.productInfoId,
+            {
+              $inc: { attributed: 1, available: -1 },
+            },
+            { new: true, session },
+          );
+
+          if (!productInfo) {
+            throw new AppError(httpStatus.NOT_FOUND, 'Product info not found');
+          }
+
+          await Category.findByIdAndUpdate(
+            productInfo.categoryId,
+            {
+              $inc: { attributed: 1, available: -1 },
+            },
+            { session },
+          );
 
           await Gadgets.create(
             {

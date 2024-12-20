@@ -38,7 +38,10 @@ const addNewProduct = async (
     await Category.findByIdAndUpdate(
       data.categoryId,
       {
-        $inc: { totalQuantity: Number(data.quantity) },
+        $inc: {
+          totalQuantity: Number(data.quantity),
+          available: Number(data.quantity),
+        },
       },
       {
         new: true,
@@ -153,7 +156,7 @@ const addQuantity = async (id: string, quantity: number) => {
     await ProductInfo.findByIdAndUpdate(
       id,
       {
-        $inc: { quantity: Number(quantity) },
+        $inc: { quantity: Number(quantity), available: Number(quantity) },
       },
       {
         new: true,
@@ -165,7 +168,7 @@ const addQuantity = async (id: string, quantity: number) => {
     await Category.findByIdAndUpdate(
       productinfo.categoryId,
       {
-        $inc: { totalQuantity: Number(quantity) },
+        $inc: { totalQuantity: Number(quantity), available: Number(quantity) },
       },
       {
         new: true,
