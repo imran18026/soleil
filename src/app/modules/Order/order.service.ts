@@ -71,6 +71,10 @@ const createOrder = async (data: Partial<TOrder>): Promise<TOrder> => {
 /**
  * Fetches all orders with query support for filtering, sorting, and pagination.
  */
+
+const noOfOrders = async (): Promise<number> => {
+  return await Order.countDocuments();
+};
 const getAllOrders = async (query: Record<string, unknown>) => {
   const ordersQuery = new QueryBuilder(
     Order.find().populate('productInfoId'),
@@ -153,6 +157,7 @@ const deleteOrder = async (orderId: string): Promise<TOrder | null> => {
 
 export const OrderService = {
   createOrder,
+  noOfOrders,
   getAllOrders,
   myOrders,
   getOrderById,

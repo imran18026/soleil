@@ -146,6 +146,9 @@ const updateUser = (id, payload) => __awaiter(void 0, void 0, void 0, function* 
     return user;
 });
 // ............................rest
+const noforUsers = () => __awaiter(void 0, void 0, void 0, function* () {
+    return (yield user_models_1.User.countDocuments()) - 1;
+});
 const getAllUserQuery = (query) => __awaiter(void 0, void 0, void 0, function* () {
     const userQuery = new QueryBuilder_1.default(user_models_1.User.find({}), query)
         .search([''])
@@ -240,6 +243,7 @@ const blockedUser = (id) => __awaiter(void 0, void 0, void 0, function* () {
 });
 exports.userService = {
     createUserToken,
+    noforUsers,
     otpVerifyAndCreateUser,
     getUserById,
     getUserByEmail,
