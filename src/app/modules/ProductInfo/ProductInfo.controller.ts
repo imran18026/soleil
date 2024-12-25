@@ -99,19 +99,32 @@ const updateProductInfo = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-// const getProductsbyCategory = catchAsync(
-//   async (req: Request, res: Response) => {
-//     const { id } = req.params;
-//     const resultData = await CategoryService.getProductsbyCategory(id);
+const getProductsbyCategory = catchAsync(
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const resultData = await ProductInfoService.getProductsbyCategory(id);
 
-//     sendResponse(res, {
-//       statusCode: httpStatus.OK,
-//       success: true,
-//       message: 'Products by category retrieved successfully!',
-//       data: resultData,
-//     });
-//   },
-// );
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Products by category retrieved successfully!',
+      data: resultData,
+    });
+  },
+);
+const getproductInfoByCategory = catchAsync(
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const resultData = await ProductInfoService.getproductInfoByCategory(id);
+
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Products by category retrieved successfully!',
+      data: resultData,
+    });
+  },
+);
 
 // /**
 //  * Get a single category by ID.
@@ -179,11 +192,12 @@ export const ProductInfoController = {
   addNewProduct,
   getAllProductsInfo,
   getproductInfoById,
-  // getProductsbyCategory,
+  getProductsbyCategory,
   // updateCategory,
   // deleteCategory,
   // deleteCategoryFromDB,
   addQuantity,
   hideProduct,
   updateProductInfo,
+  getproductInfoByCategory,
 };

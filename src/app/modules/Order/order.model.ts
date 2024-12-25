@@ -73,8 +73,15 @@ const orderSchema = new Schema<TOrder, OrderModel>(
       type: Boolean,
       default: false,
     },
-    phoneNumber: {
+    phoneNumber1: {
       type: String,
+    },
+    phoneNumber2: {
+      type: String,
+    },
+    isPhoneNumberSaved: {
+      type: Boolean,
+      default: false,
     },
     isPaymentDone: {
       type: Boolean,

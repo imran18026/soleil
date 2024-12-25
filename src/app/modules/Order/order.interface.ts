@@ -18,7 +18,9 @@ export type TOrder = {
   date: Date; // Date of the order
   deliveryLocation: string; // Delivery location
   isSaveLocation: boolean; // Whether to save the delivery location
-  phoneNumber: string; // Contact phone number
+  phoneNumber1: string; // Contact phone number
+  phoneNumber2: string; // Contact phone number
+  isPhoneNumberSaved: boolean; // Contact phone number
   isPaymentDone: boolean; // Whether payment is completed
   isDeleted: boolean; // Soft delete flag
 };

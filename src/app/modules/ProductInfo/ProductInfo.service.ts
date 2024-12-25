@@ -261,24 +261,33 @@ const getAllProductsInfo = async (query: Record<string, unknown>) => {
 };
 
 const getProductsbyCategory = async (id: string) => {
-  const uniqueProductNames = await Product.distinct('productName', {
-    category: id,
+  const productInfos = await ProductInfo.find({ categoryId: id });
+
+  // Extract the productInfo IDs
+  const productInfoIds = productInfos.map((product) => product._id);
+
+  // Step 2: Query the Product collection using productInfo IDs
+  const products = await Product.find({
+    productInfoId: { $in: productInfoIds },
   });
-  const products = await Promise.all(
-    uniqueProductNames.map(async (productName) => {
-      return Product.findOne({
-        category: id,
-        productName,
-        isSold: false,
-        isDeleted: false,
-        isHidden: false,
-      });
-    }),
-  );
 
-  const result = products.filter(Boolean); // remove any null values
+  console.log(products);
+  return products;
+};
+const getproductInfoByCategory = async (id: string) => {
+  const result = await ProductInfo.find({ categoryId: id });
 
-  return result;
+  // If products exist, calculate the available quantity
+  if (result && result.length > 0) {
+    const updatedResult = result.map((item: any) => ({
+      ...item._doc, // Spread the actual document data
+      available: item.quantity - item.attributed, // Add the 'available' property
+    }));
+
+    return updatedResult; // Return the updated array
+  }
+
+  return [];
 };
 
 /**
@@ -286,6 +295,7 @@ const getProductsbyCategory = async (id: string) => {
  */
 const getproductInfoById = async (id: string): Promise<TProductInfo | null> => {
   const Product = await ProductInfo.findById(id);
+  console.log(Product);
   return Product;
 };
 
@@ -338,4 +348,5 @@ export const ProductInfoService = {
   addQuantity,
   hideProduct,
   updateProductInfo,
+  getproductInfoByCategory,
 };
