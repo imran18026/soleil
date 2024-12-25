@@ -50,9 +50,10 @@ router.patch(
   ProductInfoController.hideProduct,
 );
 
-// router.get('/products/:id', CategoryController.getProductsbyCategory);
+router.get('/category-products/:id', ProductInfoController.getProductsbyCategory);
 
 router.get('/:id', ProductInfoController.getproductInfoById);
+router.get('/category/:id', ProductInfoController.getproductInfoByCategory);
 
 // router.patch(
 //   '/:id',
